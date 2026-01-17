@@ -1,0 +1,44 @@
+name: Deploy to AWS (ECS Fargate)
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        run: |
+          IMAGE="${{ secrets.ECR_REPO_URI }}:${{ github.sha }}"
+          docker build -t "$IMAGE" app/backend
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Also push latest tag
+        run: |
+          docker pull "${{ secrets.ECR_REPO_URI }}:${{ github.sha }}"
+          docker tag "${{ secrets.ECR_REPO_URI }}:${{ github.sha }}" "${{ secrets.ECR_REPO_URI }}:latest"
+          docker push "${{ secrets.ECR_REPO_URI }}:latest"
+
+      - name: Force ECS redeploy
+        run: |
+          aws ecs update-service \
+            --cluster "${{ secrets.ECS_CLUSTER }}" \
+            --service "${{ secrets.ECS_SERVICE }}" \
+            --force-new-deployment
