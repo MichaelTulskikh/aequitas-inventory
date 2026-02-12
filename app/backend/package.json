@@ -1,8 +1,0 @@
-{
-  "name": "aequitas-inventory-backend",
-  "version": "0.1.0",
-  "main": "server.js",
-  "dependencies": {
-    "express": "^4.19.2"
-  }
-}
