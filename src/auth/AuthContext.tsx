@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getIdToken, logout as authLogout } from './auth';
 
-export type Role = "[Admin]" | "[Staff]" | "[Viewer]";
+export type Role = "[Admin]" | "[Staff]" | "[Viewer]" | "Admin" | "Staff" | "Viewer" ;
 
 export function parseJwt(token: string): any {
   const base64 = token.split(".")[1];

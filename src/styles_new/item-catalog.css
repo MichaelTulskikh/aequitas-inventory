@@ -1,0 +1,572 @@
+@import "./warehouse-theme.css";
+
+/* =========================
+   Page
+========================= */
+
+.item-catalog-page {
+  padding: 14px;
+}
+
+.item-catalog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-main);
+}
+
+.item-catalog-title {
+  font-size: 20px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.item-catalog-subtitle {
+  margin-top: 4px;
+  max-width: 820px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  font-size: 12px;
+}
+
+/* =========================
+   Filters
+========================= */
+
+.item-catalog-filters {
+  display: grid;
+  grid-template-columns: minmax(260px, 2fr) minmax(260px, 1fr);
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+}
+
+.item-catalog-filters .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.item-catalog-filters .filter-group > label:first-child {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.item-catalog-filters .filter-group.small {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.item-catalog-filters input {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.item-catalog-filters input:focus {
+  outline: 2px solid rgba(31, 79, 120, 0.14);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.item-catalog-filters .shipment-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.item-catalog-filters .shipment-toggle input {
+  width: 13px;
+  height: 13px;
+  min-height: 13px;
+  margin: 0;
+}
+
+/* =========================
+   Shared Panels
+========================= */
+
+.shipment-panel {
+  margin-bottom: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.shipment-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--line-main);
+}
+
+.shipment-panel-header h2,
+.shipment-panel-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+/* =========================
+   Form
+========================= */
+
+.item-form {
+  padding: 10px;
+}
+
+.my-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.form-group.span-2 {
+  grid-column: span 2;
+}
+
+.form-group.small {
+  align-self: start;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  min-height: 58px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: 2px solid rgba(31, 79, 120, 0.14);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: #f7f9fb;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* =========================
+   Compact flags + tag controls
+========================= */
+
+.shipment-toggle,
+.inventory-tag-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 4px 7px;
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.shipment-toggle:hover,
+.inventory-tag-filter:hover {
+  background: var(--bg-hover);
+}
+
+.shipment-toggle input,
+.inventory-tag-filter input {
+  width: 13px;
+  height: 13px;
+  min-height: 13px;
+  margin: 0;
+}
+
+/* make flags tight, not stacked giant blocks */
+.form-group.small .shipment-toggle {
+  min-height: 22px;
+  padding: 2px 0;
+  border: none;
+  background: transparent;
+}
+
+.form-group.small .shipment-toggle:hover {
+  background: transparent;
+}
+
+.item-tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* =========================
+   Attribute editor
+========================= */
+
+.attribute-editor {
+  margin-top: 12px;
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel-alt);
+  overflow: hidden;
+}
+
+.attribute-editor .shipment-panel-header {
+  padding: 8px 10px;
+}
+
+.attribute-editor-stack {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+}
+
+.attribute-editor-card {
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  overflow: hidden;
+}
+
+.attribute-editor-card .my-profile-grid {
+  padding: 8px;
+  gap: 8px;
+}
+
+.attribute-editor-card .form-actions {
+  padding-top: 0;
+}
+
+/* flags row inside attribute cards */
+.attribute-editor-card .form-group.small {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attribute-editor-card .form-group.small .shipment-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.app-button,
+.secondary-button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.app-button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.app-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.secondary-button {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--text-main);
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.secondary-button.danger {
+  color: var(--danger);
+  border-color: #d9b4b4;
+  background: #fbf1f1;
+}
+
+.secondary-button.danger:hover:not(:disabled) {
+  background: #f9e8e8;
+}
+
+.app-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Messages / loading
+========================= */
+
+.dashboard-error,
+.dashboard-empty {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.dashboard-error {
+  background: #fbf1f1;
+  border-color: #d9b4b4;
+  color: var(--danger);
+}
+
+.dashboard-empty {
+  margin: 10px;
+  background: #f7f9fb;
+  border-color: var(--line-soft);
+  color: var(--text-muted);
+}
+
+.dashboard-loading {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--line-main);
+  border-top-color: var(--accent);
+  animation: item-catalog-spin 0.8s linear infinite;
+}
+
+@keyframes item-catalog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   Table
+========================= */
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  font-size: 12px;
+}
+
+.dashboard-table thead th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line-main);
+  background: var(--bg-table-head);
+}
+
+.dashboard-table tbody td {
+  padding: 8px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--text-main);
+}
+
+.dashboard-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.dashboard-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* =========================
+   Tags
+========================= */
+
+.inventory-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.inventory-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--line-main);
+  color: var(--text-main);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* =========================
+   Form actions
+========================= */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 0 8px 8px;
+  margin-top: 2px;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 980px) {
+  .item-catalog-filters,
+  .my-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.span-2 {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .item-catalog-page {
+    padding: 10px;
+  }
+
+  .item-catalog-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .item-catalog-title {
+    font-size: 18px;
+  }
+
+  .item-form {
+    padding: 8px;
+  }
+
+  .attribute-editor-stack,
+  .attribute-editor-card .my-profile-grid {
+    padding: 8px;
+  }
+
+  .shipment-panel-header {
+    padding: 8px 10px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .app-button,
+  .form-actions .secondary-button {
+    width: 100%;
+  }
+
+  .dashboard-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

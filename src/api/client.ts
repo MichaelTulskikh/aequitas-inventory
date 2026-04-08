@@ -1,15 +1,23 @@
-import { getAccessToken, refreshAccessToken, logout} from "../auth/auth";
+import {
+  getAccessToken,
+  refreshAccessToken,
+  logout,
+  getIdToken,
+} from "../auth/auth";
+import { emitError, emitToast } from "../utils/errorBus";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
   let token = getAccessToken();
+  const id_token = getIdToken();
 
   let res = await fetch(`${API_BASE}/api${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(id_token ? { "X-ID-Token": id_token } : {}),
       ...(options.headers || {}),
     },
   });
@@ -30,43 +38,33 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
         ...(options.headers || {}),
       },
     });
+  }
 
+  let data: any = null;
+
+  try {
+    data = await res.json();
+  } catch {
+    // fallback if server returns plain text
   }
 
   if (!res.ok) {
-    const text = await res.text();
-    console.log("[API]", path, res.status, text);
-    throw new Error(text);
+    const message =
+      data?.error ||
+      data?.message ||
+      `Request failed (${res.status})`;
+
+    console.log("[API]", path, res.status, message);
+
+    emitError(message);
+
+    throw new Error(message);
   }
 
-  return res.json();
-}
+  // success toast support
+  if (data?.message) {
+    emitToast(data.message, "success");
+  }
 
-type InventoryParams = {
-  q?: string;
-  types?: string;        // category filter
-  pallets?: string;
-  boxes?: string;
-  min_on_hand?: number;
-  page?: number;
-  page_size?: number;
-};
-
-export function fetchInventory(params: InventoryParams = {}) {
-  const search = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== "") {
-      search.set(key, String(value));
-    }
-  });
-
-  const qs = search.toString();
-  return apiFetch(`/inventory${qs ? `?${qs}` : ""}`);
-}
-
-export function fetchMyRequests() {
-  return apiFetch(`/requests`, {
-    method: "POST",
-  });
+  return data;
 }

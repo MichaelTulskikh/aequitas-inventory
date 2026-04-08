@@ -1,0 +1,5 @@
+@import "./warehouse-theme.css";
+
+.audit-table-wrapper { overflow: auto; }
+.audit-table { min-width: 1120px; }
+.audit-row-meta { display: grid; gap: 4px; }

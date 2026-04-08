@@ -12,12 +12,11 @@ export function RequireRole({
   const { user } = useAuth();
   const loc = useLocation();
 
-  // not logged in at all
+  // navigate -> home (? maybe add actual not allowed message later) if no user authenticated
   if (!user) {
     return <Navigate to="/" replace state={{ from: loc.pathname }} />;
   }
 
-  // check if ANY user role is allowed
   const isAllowed = user.roles.some((role) => allow.includes(role as Role));
 
   if (!isAllowed) {

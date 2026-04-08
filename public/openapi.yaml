@@ -1,0 +1,899 @@
+openapi: 3.0.3
+info:
+  title: WMS API
+  version: "V2"
+  description: |
+    Aequitas Inventory Management API
+
+servers:
+  - url: https://ts6by35hd4.execute-api.eu-north-1.amazonaws.com
+    description: API Gateway
+
+tags:
+  - name: Health
+  - name: Dashboard v2
+  - name: Catalog Meta v2
+  - name: Inbound Shipments v2
+  - name: Inventory Audit v2
+  - name: Inventory v2
+  - name: Inventory Valuation v2
+  - name: Item Catalog v2
+  - name: Locations Admin v2
+  - name: Requester Profile v2
+  - name: Requester Profiles Admin v2
+  - name: Shipments v2
+  - name: Shipment Lines v2
+  - name: System Settings v2
+
+components:
+  securitySchemes:
+    cognitoJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: Resource identifier
+      schema:
+        type: string
+
+  responses:
+    DefaultSuccess:
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+    NotFound:
+      description: Resource not found
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        "200":
+          description: Service and dependency health
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                  version:
+                    type: string
+                  environment:
+                    type: string
+                  region:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptimeSeconds:
+                    type: integer
+                  requestId:
+                    type: string
+                    nullable: true
+                  checks:
+                    type: object
+                    properties:
+                      api:
+                        type: object
+                        properties:
+                          ok:
+                            type: boolean
+                      db:
+                        type: object
+                        properties:
+                          ok:
+                            type: boolean
+                          database:
+                            type: string
+                          user:
+                            type: string
+                          postgresVersion:
+                            type: string
+                          serverTime:
+                            type: string
+                            format: date-time
+        "503":
+          description: Dependency unhealthy
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/v2/dashboard:
+    get:
+      tags: [Dashboard v2]
+      summary: Get dashboard summary
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v2/catalog-meta/categories:
+    get:
+      tags: [Catalog Meta v2]
+      summary: List categories
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Catalog Meta v2]
+      summary: Create category
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/catalog-meta/categories/{id}:
+    patch:
+      tags: [Catalog Meta v2]
+      summary: Update category
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v2/catalog-meta/tags:
+    get:
+      tags: [Catalog Meta v2]
+      summary: List tags
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Catalog Meta v2]
+      summary: Create tag
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/catalog-meta/tags/{id}:
+    patch:
+      tags: [Catalog Meta v2]
+      summary: Update tag
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v2/inbound-shipments:
+    get:
+      tags: [Inbound Shipments v2]
+      summary: List inbound shipments
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Inbound Shipments v2]
+      summary: Create inbound shipment
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inbound-shipments/{id}:
+    get:
+      tags: [Inbound Shipments v2]
+      summary: Get inbound shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    patch:
+      tags: [Inbound Shipments v2]
+      summary: Update inbound shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory-audit:
+    get:
+      tags: [Inventory Audit v2]
+      summary: List inventory audits
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/catalog:
+    get:
+      tags: [Inventory v2]
+      summary: Get inventory catalog
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/categories:
+    get:
+      tags: [Inventory v2]
+      summary: List inventory categories
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/items:
+    get:
+      tags: [Inventory v2]
+      summary: List inventory items
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Inventory v2]
+      summary: Create inventory item
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/items/{id}:
+    get:
+      tags: [Inventory v2]
+      summary: Get inventory item
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    patch:
+      tags: [Inventory v2]
+      summary: Update inventory item
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/items/{id}/attribute-definitions:
+    get:
+      tags: [Inventory v2]
+      summary: List item attribute definitions
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/locations/tree:
+    get:
+      tags: [Inventory v2]
+      summary: Get inventory location tree
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}:
+    get:
+      tags: [Inventory v2]
+      summary: Get inventory lot
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}/adjust:
+    post:
+      tags: [Inventory v2]
+      summary: Adjust inventory lot
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}/images:
+    get:
+      tags: [Inventory v2]
+      summary: List inventory lot images
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Inventory v2]
+      summary: Add inventory lot image
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}/images/upload-url:
+    post:
+      tags: [Inventory v2]
+      summary: Create lot image upload URL
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}/relocate:
+    post:
+      tags: [Inventory v2]
+      summary: Relocate inventory lot
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/lots/{id}/value:
+    patch:
+      tags: [Inventory Valuation v2]
+      summary: Update inventory lot value
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/receive:
+    post:
+      tags: [Inventory v2]
+      summary: Receive inventory
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/tags:
+    get:
+      tags: [Inventory v2]
+      summary: List inventory tags
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/valuation-lots:
+    get:
+      tags: [Inventory Valuation v2]
+      summary: List valuation lots
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/inventory/value-summary:
+    get:
+      tags: [Inventory Valuation v2]
+      summary: Get inventory value summary
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/categories:
+    get:
+      tags: [Item Catalog v2]
+      summary: List item catalog categories
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/items:
+    get:
+      tags: [Item Catalog v2]
+      summary: List item catalog items
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Item Catalog v2]
+      summary: Create item catalog item
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/items/{id}:
+    get:
+      tags: [Item Catalog v2]
+      summary: Get item catalog item
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    patch:
+      tags: [Item Catalog v2]
+      summary: Update item catalog item
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/items/{id}/images:
+    get:
+      tags: [Item Catalog v2]
+      summary: List item catalog images
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Item Catalog v2]
+      summary: Add item catalog image
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/items/{id}/images/upload-url:
+    post:
+      tags: [Item Catalog v2]
+      summary: Create item image upload URL
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/item-catalog/tags:
+    get:
+      tags: [Item Catalog v2]
+      summary: List item catalog tags
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/locations-admin:
+    get:
+      tags: [Locations Admin v2]
+      summary: List locations
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Locations Admin v2]
+      summary: Create location
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/locations-admin/{id}:
+    patch:
+      tags: [Locations Admin v2]
+      summary: Update location
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/requester-profile/me:
+    get:
+      tags: [Requester Profile v2]
+      summary: Get current requester profile
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    put:
+      tags: [Requester Profile v2]
+      summary: Update current requester profile
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/requester-profiles-admin:
+    get:
+      tags: [Requester Profiles Admin v2]
+      summary: List requester profiles
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/requester-profiles-admin/{id}:
+    get:
+      tags: [Requester Profiles Admin v2]
+      summary: Get requester profile
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    patch:
+      tags: [Requester Profiles Admin v2]
+      summary: Update requester profile
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments:
+    get:
+      tags: [Shipments v2]
+      summary: List shipments
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    post:
+      tags: [Shipments v2]
+      summary: Create shipment
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/value-summary:
+    get:
+      tags: [Shipments v2]
+      summary: Get shipment value summary
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}:
+    get:
+      tags: [Shipments v2]
+      summary: Get shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    patch:
+      tags: [Shipments v2]
+      summary: Update shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}/approve:
+    post:
+      tags: [Shipments v2]
+      summary: Approve shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}/fulfill:
+    post:
+      tags: [Shipments v2]
+      summary: Fulfill shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}/lines:
+    post:
+      tags: [Shipments v2]
+      summary: Add shipment line
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}/submit:
+    post:
+      tags: [Shipments v2]
+      summary: Submit shipment
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipments/{id}/value-summary:
+    get:
+      tags: [Shipments v2]
+      summary: Get shipment value summary by ID
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipment-lines/{id}:
+    patch:
+      tags: [Shipment Lines v2]
+      summary: Update shipment line
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    delete:
+      tags: [Shipment Lines v2]
+      summary: Delete shipment line
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipment-lines/{id}/reserve:
+    post:
+      tags: [Shipment Lines v2]
+      summary: Reserve shipment line
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/shipment-lines/{id}/unreserve:
+    post:
+      tags: [Shipment Lines v2]
+      summary: Unreserve shipment line
+      security:
+        - cognitoJwt: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+
+  /api/v2/system-settings:
+    get:
+      tags: [System Settings v2]
+      summary: List system settings
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"
+    put:
+      tags: [System Settings v2]
+      summary: Update system settings
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          $ref: "#/components/responses/DefaultSuccess"

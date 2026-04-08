@@ -8,7 +8,7 @@ const LOGOUT_URI = import.meta.env.VITE_COGNITO_LOGOUT_URI;
 
 const TOKEN_ENDPOINT = `${COGNITO_DOMAIN}/oauth2/token`;
 
-// PKCE helpers (minimal)
+// PKCE helpers -- necessary TODO: do more research on this
 
 function base64UrlEncode(buffer: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buffer)))
@@ -99,7 +99,7 @@ export async function handleAuthRedirect(): Promise<void> {
     localStorage.setItem("refresh_token", data.refresh_token);
   }
 
-  // CRITICAL CLEANUP
+  // !! Necessary cleanup
   localStorage.removeItem("pkce_verifier");
   sessionStorage.removeItem("oauth_code_used");
   sessionStorage.removeItem("auth_in_progress");

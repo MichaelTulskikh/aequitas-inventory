@@ -1,0 +1,328 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* =========================
+Layout
+========================= */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+/* =========================
+Sidebar
+========================= */
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #111827, #0f172a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px;
+  transition: left 0.25s ease;
+}
+
+.sidebar-brand {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 26px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.sidebar-nav a {
+  text-decoration: none;
+  color: #d1d5db;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.sidebar-nav a:hover {
+  background: #374151;
+}
+
+.sidebar-nav a.active {
+  background: #4f46e5;
+  color: white;
+}
+
+/* =========================
+Overlay
+========================= */
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  z-index: 150;
+}
+
+/* =========================
+Main Area
+========================= */
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+Header
+========================= */
+
+.top-header {
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 18px;
+  gap: 12px;
+}
+
+.page-title {
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* =========================
+Admin pill
+========================= */
+
+.admin-pill {
+  margin-left: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+/* =========================
+Language Switch
+========================= */
+
+.lang-switch {
+  position: relative;
+  width: 70px;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang-slider {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  width: 48%;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: transform 0.25s;
+}
+
+.lang-slider.right {
+  transform: translateX(100%);
+}
+
+.lang-switch span {
+  z-index: 2;
+}
+
+.lang-switch .active {
+  color: white;
+}
+
+/* =========================
+Logout
+========================= */
+
+.logout-button {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.logout-button:hover {
+  background: #f3f4f6;
+}
+
+/* =========================
+Main content
+========================= */
+
+.app-main {
+  flex: 1;
+  padding: 24px;
+}
+
+/* =========================
+Footer
+========================= */
+
+.app-footer {
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+}
+
+/* =========================
+Mobile
+========================= */
+
+.mobile-menu {
+  display: none;
+
+  font-size: 20px;
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 230px;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+    z-index: 200;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .app-layout {
+    display: block;
+  }
+
+  .main-area {
+    width: 100%;
+  }
+
+  .top-header {
+    height: auto;
+    padding: 10px 12px;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .app-main {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+}
