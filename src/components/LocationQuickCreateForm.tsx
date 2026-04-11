@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createLocation } from "../api/locationsAdmin";
+import styles from "./LocationQuickCreateForm.module.css";
 
 type LocationForm = {
   name: string;
@@ -96,7 +97,9 @@ export default function LocationQuickCreateForm({
   const [quickAction, setQuickAction] = useState<"pallet" | "box">(
     initialType === "pallet" ? "pallet" : "box",
   );
-  const [quickParentId, setQuickParentId] = useState(initialParentLocationId || "");
+  const [quickParentId, setQuickParentId] = useState(
+    initialParentLocationId || "",
+  );
 
   const [form, setForm] = useState<LocationForm>(() => ({
     ...emptyLocationForm(),
@@ -340,17 +343,14 @@ export default function LocationQuickCreateForm({
   }
 
   return (
-    <div>
-      {error && <div className="dashboard-error">Error: {error}</div>}
+    <div className={styles.root}>
+      {error && <div className="alert-error">Error: {error}</div>}
 
-      <div className="shipment-panel-header" style={{ marginBottom: 16 }}>
+      {/* <div className={`panel-header ${styles.sectionHeader}`}>
         <h3>Create Mode</h3>
-      </div>
+      </div> */}
 
-      <div
-        className="item-tag-grid"
-        style={{ marginBottom: 20, display: "flex", gap: 16, flexWrap: "wrap" }}
-      >
+      <div className={styles.modeRow}>
         <label className="shipment-toggle">
           <input
             type="radio"
@@ -375,7 +375,7 @@ export default function LocationQuickCreateForm({
       </div>
 
       {mode === "quick" ? (
-        <form className="item-form" onSubmit={handleQuickCreate}>
+        <form className={styles.form} onSubmit={handleQuickCreate}>
           <div className="my-profile-grid">
             <div className="form-group">
               <label>Quick Action</label>
@@ -395,7 +395,9 @@ export default function LocationQuickCreateForm({
 
             <div className="form-group">
               <label>
-                {quickAction === "pallet" ? "Parent Warehouse" : "Parent Pallet"}
+                {quickAction === "pallet"
+                  ? "Parent Warehouse"
+                  : "Parent Pallet"}
               </label>
               <select
                 value={quickParentId}
@@ -403,13 +405,14 @@ export default function LocationQuickCreateForm({
                 disabled={saving}
               >
                 <option value="">Select parent</option>
-                {(quickAction === "pallet" ? warehouseOptions : palletOptions).map(
-                  (loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {(loc.path || [loc.name]).join(" / ")}
-                    </option>
-                  ),
-                )}
+                {(quickAction === "pallet"
+                  ? warehouseOptions
+                  : palletOptions
+                ).map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    {(loc.path || [loc.name]).join(" / ")}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -424,14 +427,14 @@ export default function LocationQuickCreateForm({
             </div>
           </div>
 
-          <div className="form-help" style={{ marginTop: 8 }}>
+          <div className={`form-help ${styles.help}`}>
             {quickAction === "pallet" &&
               "Create the next numbered pallet under a warehouse."}
             {quickAction === "box" &&
               "Create the next numbered box under a pallet."}
           </div>
 
-          <div className="form-actions" style={{ marginTop: 20 }}>
+          <div className={`form-actions ${styles.actions}`}>
             <button
               type="button"
               className="secondary-button"
@@ -451,7 +454,7 @@ export default function LocationQuickCreateForm({
           </div>
         </form>
       ) : (
-        <form className="item-form" onSubmit={handleManualSave}>
+        <form className={styles.form} onSubmit={handleManualSave}>
           <div className="my-profile-grid">
             <div className="form-group">
               <label>Type</label>
@@ -474,7 +477,9 @@ export default function LocationQuickCreateForm({
               <label>Parent Location</label>
               <select
                 value={form.parent_location_id}
-                onChange={(e) => updateForm("parent_location_id", e.target.value)}
+                onChange={(e) =>
+                  updateForm("parent_location_id", e.target.value)
+                }
                 disabled={saving || form.type === "warehouse"}
               >
                 <option value="">
@@ -517,14 +522,14 @@ export default function LocationQuickCreateForm({
             </div>
           </div>
 
-          <div className="form-help" style={{ marginTop: 8 }}>
+          <div className={`form-help ${styles.help}`}>
             {form.type === "warehouse" && "Warehouses do not have a parent."}
             {form.type === "pallet" &&
               "Pallets can only be created under warehouses."}
             {form.type === "box" && "Boxes can only be created under pallets."}
           </div>
 
-          <div className="form-actions" style={{ marginTop: 20 }}>
+          <div className={`form-actions ${styles.actions}`}>
             <button
               type="button"
               className="secondary-button"

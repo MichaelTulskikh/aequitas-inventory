@@ -9,7 +9,7 @@ import {
   uploadFileToPresignedUrl,
   type MediaImage,
 } from "../api/media";
-import "../styles_new/image-upload-panel.css";
+import styles from "./ImageUploadPanel.module.css";
 
 type Props =
   | {
@@ -101,8 +101,8 @@ export default function ImageUploadPanel(props: Props) {
   }
 
   return (
-    <section className="image-upload-panel">
-      <div className="image-upload-panel__header">
+    <section className={styles.panel}>
+      <div className={styles.header}>
         <h3>{props.title || "Images"}</h3>
 
         <button
@@ -115,14 +115,14 @@ export default function ImageUploadPanel(props: Props) {
         </button>
       </div>
 
-      <div className="image-upload-panel__body">
-        <div className="image-upload-panel__controls">
-          <div className="image-upload-panel__field">
-            <label className="image-upload-panel__label">Upload Images</label>
+      <div className={styles.body}>
+        <div className={styles.controls}>
+          <div className={styles.field}>
+            <label className={styles.label}>Upload Images</label>
 
-            <div className="image-upload-panel__input-row">
+            <div className={styles.inputRow}>
               <input
-                className="image-upload-panel__file-input"
+                className={styles.fileInput}
                 type="file"
                 accept="image/*"
                 capture="environment"
@@ -132,7 +132,7 @@ export default function ImageUploadPanel(props: Props) {
               />
             </div>
 
-            <div className="image-upload-panel__help">
+            <div className={styles.help}>
               On phones, this may open the camera or photo library depending on
               the browser.
             </div>
@@ -140,30 +140,30 @@ export default function ImageUploadPanel(props: Props) {
         </div>
 
         {uploading && (
-          <div className="image-upload-panel__status">Uploading...</div>
+          <div className={styles.status}>Uploading...</div>
         )}
 
-        {error && <div className="dashboard-error">Error: {error}</div>}
+        {error && <div className="alert-error">Error: {error}</div>}
 
-        <div className="image-upload-panel__content">
+        <div className={styles.content}>
           {images.length === 0 ? (
-            <div className="image-upload-panel__empty">No images.</div>
+            <div className={styles.empty}>No images.</div>
           ) : (
-            <div className="image-grid">
+            <div className={styles.grid}>
               {images.map((img) => (
-                <article key={img.id} className="image-card">
+                <article key={img.id} className={styles.card}>
                   {img.url ? (
                     <img src={img.url} alt={img.caption || "image"} />
                   ) : (
-                    <div className="image-card__placeholder">No preview</div>
+                    <div className={styles.placeholder}>No preview</div>
                   )}
 
-                  <div className="image-card-meta">
-                    <div className="image-card-meta__name">
+                  <div className={styles.cardMeta}>
+                    <div className={styles.cardName}>
                       {img.caption || "—"}
                     </div>
                     {img.is_primary && (
-                      <div className="image-card-meta__badge">Primary</div>
+                      <div className={styles.badge}>Primary</div>
                     )}
                   </div>
                 </article>

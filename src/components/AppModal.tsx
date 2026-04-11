@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from "react";
-import "../styles_new/app-modal.css"
+import styles from "./AppModal.module.css"
 
 type Props = {
   title?: string;
@@ -31,18 +31,18 @@ export default function AppModal({
   }, [onClose]);
 
   return (
-    <div className="app-modal-overlay" onClick={onClose}>
+    <div className={styles.overlay} onClick={onClose}>
       <div
-        className="app-modal-content"
+        className={styles.content}
         style={{ maxWidth: width }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="app-modal-header">
-          <div className="app-modal-title">{title || "Details"}</div>
+        <div className={styles.header}>
+          <div className={styles.title}>{title || "Details"}</div>
 
           <button
             type="button"
-            className="app-modal-close"
+            className={styles.closeButton}
             onClick={onClose}
             aria-label="Close modal"
           >
@@ -50,7 +50,7 @@ export default function AppModal({
           </button>
         </div>
 
-        <div className="app-modal-body">{children}</div>
+        <div className={styles.body}>{children}</div>
       </div>
     </div>
   );

@@ -1,0 +1,215 @@
+/* ===== Page ===== */
+.page {
+  padding: var(--page-pad);
+  min-height: 100%;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line-main);
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* ===== Filters ===== */
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 2fr 1.2fr auto;
+  gap: 10px;
+  align-items: end;
+  padding: 10px;
+  margin-bottom: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.input,
+.select {
+  height: 30px;
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid var(--line-main);
+  border-radius: 2px;
+}
+
+/* ===== Buttons ===== */
+.button {
+  border: 1px solid var(--line-main);
+  background: #fff;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.secondary {
+  background: #fff;
+}
+
+/* ===== Table ===== */
+.tableWrapper {
+  border: 1px solid var(--line-main);
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  background: var(--bg-table-head);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.row:hover {
+  background: var(--bg-hover);
+}
+
+/* ===== Expand ===== */
+.expandBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+/* ===== Item ===== */
+.itemName {
+  font-weight: 700;
+}
+
+.itemDescription {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Tags ===== */
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--line-main);
+  background: var(--bg-panel-alt);
+}
+
+/* ===== Meta ===== */
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.numeric {
+  text-align: right;
+}
+
+/* ===== Actions ===== */
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* ===== Lot rows ===== */
+.lotRow {
+  background: #fff;
+}
+
+.lotDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ===== Summary ===== */
+.summaryBar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+}
+
+/* ===== Pagination ===== */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.paginationGroup {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== Modal ===== */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--line-main);
+  padding: 16px;
+  max-width: 420px;
+  width: 100%;
+}

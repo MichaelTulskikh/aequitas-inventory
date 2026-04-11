@@ -9,7 +9,7 @@ import {
   updateInventoryLotAttributes,
 } from "../api/inventory";
 import ImageUploadPanel from "./ImageUploadPanel";
-import "../styles_new/inventory-lot-detail.css";
+import styles from "./InventoryLotDetailContent.module.css";
 
 type Props = {
   lotId: string;
@@ -258,17 +258,17 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
   }
 
   return (
-    <div className="lot-detail-content">
-      {error && <div className="dashboard-error">Error: {error}</div>}
-      {success && <div className="profile-success">{success}</div>}
+    <div className={styles.page}>
+      {error && <div className="alert-error">Error: {error}</div>}
+      {success && <div className="alert-success">{success}</div>}
 
-      <div className="lot-detail-grid">
-        <section className="shipment-panel">
-          <div className="shipment-panel-header">
+      <div className={styles.grid}>
+        <section className="panel">
+          <div className="panel-header">
             <h2>Item</h2>
           </div>
 
-          <div className="lot-detail-fields">
+          <div className={styles.fields}>
             <div>
               <strong>Name</strong>
               <div>{lot.item_name}</div>
@@ -291,8 +291,8 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           </div>
         </section>
 
-        <section className="shipment-panel">
-          <div className="shipment-panel-header lot-detail-header-with-actions">
+        <section className="panel">
+          <div className={`panel header ${styles.headerWithActions}`}>
             <h2>Location</h2>
 
             {isAdmin && (
@@ -310,7 +310,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
             )}
           </div>
 
-          <div className="lot-detail-fields">
+          <div className={styles.fields}>
             <div>
               <strong>Location</strong>
               <div>{lot.location_name}</div>
@@ -344,7 +344,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           </div>
 
           {isAdmin && relocateOpen && (
-            <form className="lot-relocate-form" onSubmit={handleRelocateSubmit}>
+            <form className={styles.form} onSubmit={handleRelocateSubmit}>
               <div className="form-group">
                 <label>New Location</label>
                 <select
@@ -398,8 +398,8 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           )}
         </section>
 
-        <section className="shipment-panel">
-          <div className="shipment-panel-header lot-detail-header-with-actions">
+        <section className="panel">
+          <div className={`panel header ${styles.headerWithActions}`}>
             <h2>Quantities</h2>
 
             {isPrivileged && (
@@ -417,7 +417,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
             )}
           </div>
 
-          <div className="lot-detail-fields">
+          <div className={styles.fields}>
             <div>
               <strong>Available</strong>
               <div>{lot.available_quantity}</div>
@@ -439,7 +439,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           </div>
 
           {isPrivileged && adjustOpen && (
-            <form className="lot-adjust-form" onSubmit={handleAdjustSubmit}>
+            <form className={styles.form} onSubmit={handleAdjustSubmit}>
               <div className="form-group">
                 <label>Delta</label>
                 <div className="muted">
@@ -493,8 +493,8 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           )}
         </section>
 
-        <section className="shipment-panel">
-          <div className="shipment-panel-header lot-detail-header-with-actions">
+        <section className="panel">
+          <div className={`panel header ${styles.headerWithActions}`}>
             <h2>Attributes</h2>
 
             {isPrivileged && (
@@ -516,7 +516,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
             Object.keys(lot.attributes || {}).length === 0 ? (
               <div className="dashboard-empty">No lot attributes.</div>
             ) : (
-              <div className="attribute-list">
+              <div className={styles.attributeList}>
                 {Object.entries(lot.attributes).map(([key, value]) => (
                   <span key={key} className="attribute-pill">
                     {formatLabel(key)}: {formatAttributeValue(value)}
@@ -525,7 +525,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
               </div>
             )
           ) : (
-            <form className="lot-adjust-form" onSubmit={handleSaveAttributes}>
+            <form className={styles.form} onSubmit={handleSaveAttributes}>
               {(lot.attribute_definitions || []).length === 0 ? (
                 <div className="dashboard-empty">
                   No attribute definitions for this item.

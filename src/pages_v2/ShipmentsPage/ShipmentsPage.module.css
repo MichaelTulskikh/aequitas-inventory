@@ -1,0 +1,124 @@
+.page {}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* summary cards */
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.summaryCard {
+  background: #fff;
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.summaryLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.summaryValue {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* filters */
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* summary bar */
+
+.summaryBar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* table */
+
+.tableWrap {
+  position: relative;
+}
+
+/* cells */
+
+.numberCell {}
+
+.number {
+  font-weight: 600;
+}
+
+.notesPreview {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.requesterCell {}
+
+.createdByCell {}
+
+/* empty */
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* pagination */
+
+.pageStatus {
+  color: var(--text-muted);
+}
+
+/* responsive */
+
+@media (max-width: 1100px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,180 @@
+.app-button,
+.secondary-button,
+.apply-button,
+.view-button,
+.add-button,
+.page-btn,
+.login-button,
+button {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  color: var(--text-main);
+  height: var(--control-h);
+  padding: 0 12px;
+  margin: 2px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.app-button,
+.add-button,
+.login-button {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.app-button:hover,
+.add-button:hover,
+.login-button:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  text-decoration: none;
+}
+
+.secondary-button,
+.apply-button.secondary,
+.view-button,
+.page-btn,
+button:not(.app-button):not(.login-button):not(.add-button) {
+  background: #fff;
+}
+
+.secondary-button:hover,
+.apply-button.secondary:hover,
+.view-button:hover,
+.page-btn:hover,
+button:not(.app-button):not(.login-button):not(.add-button):hover {
+  background: var(--bg-hover);
+  text-decoration: none;
+}
+
+button:disabled,
+.app-button:disabled,
+.secondary-button:disabled,
+.apply-button:disabled,
+.view-button:disabled,
+.add-button:disabled,
+.page-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  width: 100%;
+  min-height: var(--control-h);
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  padding: 8px 10px;
+  color: var(--text-main);
+  font: inherit;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):disabled {
+    background: #f0eded
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+input:focus:not([type="checkbox"]):not([type="radio"]),
+select:focus,
+textarea:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(31, 79, 120, 0.18);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  accent-color: var(--accent);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: #fff;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: 2px solid rgba(31, 79, 120, 0.18);
+  outline-offset: 2px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-faint);
+}
+
+.form-group,
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 5px;
+}
+
+.form-group label,
+.filter-group > label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.form-group.small,
+.filter-group.small {
+  min-width: 200px;
+}
+
+.form-group.span-2 {
+  grid-column: span 2;
+}
+
+.filter-group.search {
+  min-width: 260px;
+}
+
+.filter-group.apply {
+  justify-content: flex-end;
+}
+
+.form-grid,
+.settings-grid,
+.my-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 14px;
+}
+
+@media (max-width: 1100px) {
+  .form-grid,
+  .settings-grid,
+  .my-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.span-2 {
+    grid-column: span 1;
+  }
+}

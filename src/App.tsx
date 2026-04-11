@@ -5,28 +5,27 @@ import { useAuth } from "./auth/AuthContext";
 
 import AuthCallback from "./pages/AuthCallback";
 import AppLayout from "./layout/AppLayout";
-import "./styles_new/login.css";
 import { useEffect } from "react";
-// import { RequireRole } from "./auth/RequireRole";
 
-import InventoryPage from "./pages_v2/InventoryPage";
-import ShipmentsPage from "./pages_v2/ShipmentsPage";
-import DashboardPage from "./pages_v2/DashboardPage";
-import ShipmentDetailPage from "./pages_v2/ShipmentDetailsPage";
-import NewShipmentPage from "./pages_v2/NewShipmentPage";
-import MyProfilePage from "./pages_v2/MyProfilePage";
-import ReceiveInventoryPage from "./pages_v2/ReceiveInventoryPage";
-import ItemCatalogPage from "./pages_v2/ItemCatalogPage";
-import CategoriesAndTagsPage from "./pages_v2/CategoriesAndTagsPage";
-import LocationsPage from "./pages_v2/LocationsPage";
-import RequesterProfilesAdminPage from "./pages_v2/RequesterProfilesAdminPage";
-import InventoryAuditPage from "./pages_v2/InventoryAuditPage";
-import SystemSettingsPage from "./pages_v2/SystemSettingsPage";
-import InboundShipmentsPage from "./pages_v2/InboundShipmentsPage";
-import InventoryValuationPage from "./pages_v2/InventoryValuationPage";
-import ApiDocsPage from "./pages_v2/ApiDocsPage";
+import InventoryPage from "./pages_v2/InventoryPage/InventoryPage";
+import ShipmentsPage from "./pages_v2/ShipmentsPage/ShipmentsPage";
+import DashboardPage from "./pages_v2/DashboardPage/DashboardPage";
+import ShipmentDetailPage from "./pages_v2/ShipmentDetailsPage/ShipmentDetailsPage";
+import NewShipmentPage from "./pages_v2/NewShipmentPage/NewShipmentPage";
+import MyProfilePage from "./pages_v2/MyProfilePage/MyProfilePage";
+import ReceiveInventoryPage from "./pages_v2/ReceiveInventoryPage/ReceiveInventoryPage";
+import ItemCatalogPage from "./pages_v2/ItemCatalogPage/ItemCatalogPage";
+import CategoriesAndTagsPage from "./pages_v2/CategoriesAndTagsPage/CategoriesAndTagsPage";
+import LocationsPage from "./pages_v2/LocationsPage/LocationsPage";
+import RequesterProfilesAdminPage from "./pages_v2/RequesterProfilesAdminPage/RequesterProfilesAdminPage";
+import InventoryAuditPage from "./pages_v2/InventoryAuditPage/InventoryAuditPage";
+import SystemSettingsPage from "./pages_v2/SystemSettingsPage/SystemSettingsPage";
+import InboundShipmentsPage from "./pages_v2/InboundShipmentsPage/InboundShipmentsPage";
+import InventoryValuationPage from "./pages_v2/InventoryValuationPage/InventoryValuationPage";
+import ApiDocsPage from "./pages_v2/ApiDocsPage/ApiDocsPage";
 import { RequireCompleteProfile } from "./auth/RequireCompleteProfile";
-import WarehouseMapTab from "./pages_v2/MapPage";
+import WarehouseMapTab from "./pages_v2/MapPage/MapPage";
+import CognitoUsersAdminPage from "./pages_v2/CognitoUsersAdminPage/CognitoUsersAdminPage";
 
 /* Simple login page */
 function LoginPage() {
@@ -78,7 +77,14 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/inventory" element={<RequireCompleteProfile><InventoryPage /></RequireCompleteProfile>} />
+        <Route
+          path="/inventory"
+          element={
+            <RequireCompleteProfile>
+              <InventoryPage />
+            </RequireCompleteProfile>
+          }
+        />
         <Route path="/receiving" element={<ReceiveInventoryPage />} />
         <Route path="/shipments" element={<ShipmentsPage />} />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />
@@ -101,11 +107,10 @@ export default function App() {
           path="/admin/inventory-valuation"
           element={<InventoryValuationPage />}
         />
-              <Route path="/admin/docs" element={<ApiDocsPage />} />
-              <Route path="/admin/map" element={<WarehouseMapTab />} />
-
+        <Route path="/admin/cognito-users" element={<CognitoUsersAdminPage/>}/>
+        <Route path="/admin/docs" element={<ApiDocsPage />} />
+        <Route path="/admin/map" element={<WarehouseMapTab />} />
       </Route>
-
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

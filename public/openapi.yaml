@@ -602,7 +602,7 @@ paths:
         "200":
           $ref: "#/components/responses/DefaultSuccess"
 
-  /api/v2/locations-admin:
+  /api/v2/locations:
     get:
       tags: [Locations Admin v2]
       summary: List locations
@@ -626,7 +626,7 @@ paths:
         "200":
           $ref: "#/components/responses/DefaultSuccess"
 
-  /api/v2/locations-admin/{id}:
+  /api/v2/locations/{id}:
     patch:
       tags: [Locations Admin v2]
       summary: Update location

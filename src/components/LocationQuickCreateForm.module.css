@@ -1,0 +1,37 @@
+.root {}
+
+.sectionHeader {
+  margin-bottom: 16px;
+}
+
+.modeRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* form */
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* spacing */
+
+.help {
+  margin-top: 8px;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+/* responsive */
+
+@media (max-width: 760px) {
+  .modeRow {
+    flex-direction: column;
+  }
+}

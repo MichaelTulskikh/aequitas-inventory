@@ -11,7 +11,7 @@ export type AdminLocation = {
 };
 
 export async function fetchLocations(): Promise<{ locations: AdminLocation[] }> {
-  return apiFetch(`/v2/locations-admin`);
+  return apiFetch(`/v2/locations`);
 }
 
 export async function createLocation(body: {
@@ -21,7 +21,7 @@ export async function createLocation(body: {
   type: string;
   is_active?: boolean;
 }) {
-  return apiFetch(`/v2/locations-admin`, {
+  return apiFetch(`/v2/locations`, {
     method: "POST",
     body: JSON.stringify(body),
   });
@@ -37,7 +37,7 @@ export async function updateLocation(
     is_active?: boolean;
   },
 ) {
-  return apiFetch(`/v2/locations-admin/${id}`, {
+  return apiFetch(`/v2/locations/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });

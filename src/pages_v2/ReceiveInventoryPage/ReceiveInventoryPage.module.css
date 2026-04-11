@@ -1,0 +1,152 @@
+.page {}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* layout */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* item picker */
+
+.itemPicker {
+  position: relative;
+}
+
+.itemInputRow {
+  display: flex;
+  gap: 6px;
+}
+
+.itemInput {
+  flex: 1;
+}
+
+.itemClear {
+  font-size: 12px;
+}
+
+.itemDropdownShell {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+
+.itemDropdown {
+  border: 1px solid var(--line-main);
+  background: #fff;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.itemOption {
+  padding: 8px;
+  text-align: left;
+}
+
+.itemOptionActive {
+  background: var(--bg-hover);
+}
+
+.itemOptionTop {
+  display: flex;
+  justify-content: space-between;
+}
+
+.itemOptionName {
+  font-weight: 600;
+}
+
+.itemOptionUnit {
+  font-size: 12px;
+}
+
+.itemOptionMeta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* location picker */
+
+.locationRow {
+  display: flex;
+  gap: 8px;
+}
+
+.locationTrigger {
+  flex: 1;
+  text-align: left;
+}
+
+.locationTriggerLabel {
+  display: block;
+}
+
+.locationClear {
+  font-size: 12px;
+}
+
+/* modal */
+
+.locationModal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.locationModalTopbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.locationTreePanel {
+  max-height: 400px;
+  overflow: auto;
+  border: 1px solid var(--line-main);
+}
+
+.locationTreeRow {
+  padding: 6px;
+}
+
+.locationTreeRowSelected {
+  background: var(--bg-active);
+}
+
+.locationTreeSelectInner {
+  display: flex;
+  justify-content: space-between;
+}
+
+.locationTreeName {
+  font-weight: 600;
+}
+
+.locationTreeType {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* review */
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

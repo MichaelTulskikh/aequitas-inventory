@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { logout, getIdToken } from "../auth/auth";
-import "../styles_new/new-layout.css";
+import styles from "./AppLayout.module.css";
 import i18n from "../i18n";
 
 type NavItem = {
@@ -50,8 +50,11 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/admin/requesters")) return "Requester Profiles";
   if (pathname.startsWith("/admin/inventory-audit")) return "Inventory Audit";
   if (pathname.startsWith("/admin/settings")) return "System Settings";
-  if (pathname.startsWith("/admin/inbound-shipments")) return "Inbound Shipments";
-  if (pathname.startsWith("/admin/inventory-valuation")) return "Inventory Valuation";
+  if (pathname.startsWith("/admin/inbound-shipments"))
+    return "Inbound Shipments";
+  if (pathname.startsWith("/admin/inventory-valuation"))
+    return "Inventory Valuation";
+  if (pathname.startsWith("/admin/cognito-users")) return "Cognito Users";
 
   if (pathname.startsWith("/admin/docs")) return "API Docs";
 
@@ -122,10 +125,11 @@ export default function AppLayout() {
         { label: "Requester Profiles", to: "/admin/requesters" },
         { label: "Inventory Audit", to: "/admin/inventory-audit" },
         { label: "System Settings", to: "/admin/settings" },
-        { label: "Inbound Shipments", to: "/admin/inbound-shipments"},
-        { label: "Inventory Valuation", to: "/admin/inventory-valuation"},
+        { label: "Inbound Shipments", to: "/admin/inbound-shipments" },
+        { label: "Inventory Valuation", to: "/admin/inventory-valuation" },
+        { label: "Cognito Users", to: "/admin/cognito-users" },
 
-        {label: "API Documentation", to: "/admin/docs"}
+        { label: "API Documentation", to: "/admin/docs" },
       ],
     }),
     [],
@@ -170,14 +174,16 @@ export default function AppLayout() {
   }, [sidebarOpen]);
 
   const renderNavGroup = (group: NavGroup) => (
-    <div className="nav-group" key={group.title}>
-      <div className="nav-title">{group.title}</div>
+    <div className={styles.nav} key={group.title}>
+      <div className={styles.navTitle}>{group.title}</div>
 
       {group.items.map((item) => (
         <Link
           key={item.to}
           className={
-            isPathActive(location.pathname, item.to, item.exact) ? "active" : ""
+            isPathActive(location.pathname, item.to, item.exact)
+              ? `${styles.navLink} ${styles.navLinkActive}`
+              : styles.navLink
           }
           to={item.to}
           onClick={closeSidebar}
@@ -189,57 +195,64 @@ export default function AppLayout() {
   );
 
   return (
-    <div className="app-layout">
+    <div className={styles.layout}>
+      
       <aside
         ref={sidebarRef}
-        className={`sidebar ${sidebarOpen ? "open" : ""}`}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
       >
-        <div className="sidebar-brand">Aequitas Warehouse</div>
+        <div className={styles.brand}>Aequitas Warehouse</div>
 
-        <nav className="sidebar-nav">
+        <nav className={styles.nav}>
           {renderNavGroup(operationsNav)}
           {isPrivileged && renderNavGroup(adminNav)}
         </nav>
       </aside>
 
-      <div className="main-area">
-        <header className="top-header">
-          <div className="header-left">
+      <div className={styles.mainArea}>
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
             <button
-              className="mobile-menu"
+              className={styles.mobileMenu}
               onClick={() => setSidebarOpen((prev) => !prev)}
               aria-label="Toggle navigation"
             >
               ☰
             </button>
 
-            <span className="page-title">{pageTitle}</span>
+            <span className={styles.pageTitle}>{pageTitle}</span>
           </div>
 
-          <div className="header-right">
-            <span className="user-name">
+          <div className={styles.headerRight}>
+            <span className={styles.userName}>
               {displayName}
-              {isAdmin && <span className="admin-pill">Administrator</span>}
-              {!isAdmin && isStaff && <span className="admin-pill">Staff</span>}
+              {isAdmin && (
+                <span className={styles.roleBadge}>Administrator</span>
+              )}
+              {!isAdmin && isStaff && (
+                <span className={styles.roleBadge}>Staff</span>
+              )}
             </span>
 
-            <div className="lang-switch" onClick={toggleLanguage}>
-              <div className={`lang-slider ${isUA ? "right" : ""}`} />
-              <span className={!isUA ? "active" : ""}>EN</span>
-              <span className={isUA ? "active" : ""}>UA</span>
+            <div className={styles.langSwitch} onClick={toggleLanguage}>
+              <div
+                className={`${styles.langSlider} ${isUA ? styles.langSliderRight : ""}`}
+              />
+              <span className={!isUA ? styles.langActive : ""}>EN</span>
+              <span className={isUA ? styles.langActive : ""}>UA</span>
             </div>
 
-            <button className="logout-button" onClick={logout}>
+            <button className={styles.logoutButton} onClick={logout}>
               Logout
             </button>
           </div>
         </header>
 
-        <main className="app-main">
+        <main className={styles.mainContent}>
           <Outlet />
         </main>
 
-        <footer className="app-footer">
+        <footer className={styles.footer}>
           © {new Date().getFullYear()} Aequitas
         </footer>
       </div>

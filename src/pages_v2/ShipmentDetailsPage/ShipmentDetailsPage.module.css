@@ -1,0 +1,149 @@
+.page {}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* layout */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* requester */
+
+.requesterGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* summary */
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* lines */
+
+.linesStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lineCard {
+  border: 1px solid var(--line-main);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.lineHead {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lineTitle {
+  font-weight: 600;
+}
+
+.lineSubtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.lineActions {
+  display: flex;
+  gap: 6px;
+}
+
+.lineBody {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* allocation */
+
+.allocationPanel {
+  margin-top: 10px;
+}
+
+.allocationSummary {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.allocationControls {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.lotPreview {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lotCard {
+  border: 1px solid var(--line-main);
+  padding: 8px;
+}
+
+.lotHead {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lotPath {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.lotAttrs {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* responsive */
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

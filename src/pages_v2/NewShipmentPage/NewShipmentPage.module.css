@@ -1,0 +1,127 @@
+.page {}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* layout */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+/* requester profile */
+
+.requesterGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.requesterGrid > div {
+  font-size: 13px;
+}
+
+.requesterGrid strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* completeness */
+
+.completeness {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  margin-bottom: 10px;
+  border: 1px solid var(--line-main);
+}
+
+.complete {
+  background: #edf7f1;
+  color: var(--success);
+  border-color: #b7d6c3;
+}
+
+.incomplete {
+  background: #fff6e5;
+  color: var(--warning);
+  border-color: #e6c88c;
+}
+
+/* form */
+
+.form {
+  border-bottom: 1px solid var(--line-soft);
+  padding: 10px;
+}
+
+/* Updated lineGrid in NewShipmentPage.module.css */
+.lineGrid {
+  display: grid;
+  /* Use 1fr for the item name and a flexible min-width for the quantity */
+  grid-template-columns: 2fr 1fr; 
+  gap: 16px;
+  align-items: start;
+}
+
+/* Ensure inputs take up full width of their grid cell */
+.lineGrid .form-group input,
+.lineGrid .form-group select {
+  width: 100%;
+  box-sizing: border-box; /* Prevents padding from adding to width */
+}
+
+.lineGrid select {
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .lineGrid {
+    /* Stack them vertically on small screens */
+    grid-template-columns: 1fr;
+  }
+}
+
+/* responsive */
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .requesterGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .lineGrid {
+    grid-template-columns: 1fr;
+  }
+}

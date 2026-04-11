@@ -12,7 +12,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   let token = getAccessToken();
   const id_token = getIdToken();
 
-  let res = await fetch(`${API_BASE}/api${path}`, {
+  let res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -24,17 +24,19 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
 
   if (res.status === 401) {
     token = await refreshAccessToken();
+    console.log("EXISTS", !!token, token)
 
     if (!token) {
       logout();
       throw new Error("Unauthorized");
     }
 
-    res = await fetch(`${API_BASE}/api${path}`, {
+    res = await fetch(`${API_BASE}${path}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(id_token ? {"X-ID-Token": id_token } : {}),
         ...(options.headers || {}),
       },
     });

@@ -1,0 +1,53 @@
+.page {}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* filters */
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* form */
+
+.form {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* completeness badge */
+
+.completeness {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--line-main);
+}
+
+.complete {
+  background: #edf7f1;
+  color: var(--success);
+  border-color: #b7d6c3;
+}
+
+.incomplete {
+  background: #fff6e5;
+  color: var(--warning);
+  border-color: #e6c88c;
+}

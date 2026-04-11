@@ -6,6 +6,10 @@ import { AuthProvider } from "./auth/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
 import "./styles_new/toast.css";
 import "./i18n";
+import "./styles/theme.css";
+import "./styles/base.css";
+import "./styles/controls.css";
+import "./styles/utilities.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
@@ -20,5 +24,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 // ReactDOM.createRoot(document.getElementById("root")!).render(
-//   <>Currently under maintenance. Will be back up on 04/09/2026. Nicholas's request has already been received is being prepared by Camille.</>
+//   <>Currently under maintenance. Ask Michael or Camille if you need something.</>
 // )

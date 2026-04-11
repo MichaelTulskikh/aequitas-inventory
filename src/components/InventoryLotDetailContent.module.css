@@ -1,0 +1,59 @@
+.page {}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* panel header with actions */
+
+.headerWithActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* fields */
+
+.fields {
+  display: grid;
+  gap: 10px;
+}
+
+.fields > div {
+  font-size: 13px;
+}
+
+.fields strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* forms */
+
+.form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* attributes */
+
+.attributeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* responsive */
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
