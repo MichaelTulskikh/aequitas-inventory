@@ -140,6 +140,7 @@ export default function ItemCatalogPage() {
       setEditingItemId(itemId);
       setForm(buildFormFromItem(res.item));
       setShowCreate(true);
+      window.scrollTo({top: 0, behavior: "smooth"})
     } catch (err: any) {
       setError(err?.message || "Failed to load item");
     }
@@ -319,7 +320,7 @@ export default function ItemCatalogPage() {
       </div>
 
       {showCreate && (
-        <section className="panel">
+        <section className="panel" id="edit-create-item">
           <div className="panel-header">
             <h2>{editingItemId ? "Edit Item" : "Create Item"}</h2>
           </div>
@@ -603,7 +604,7 @@ export default function ItemCatalogPage() {
                 <th>Tags</th>
                 <th>Flags</th>
                 <th>Attributes</th>
-                <th />
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -646,10 +647,12 @@ export default function ItemCatalogPage() {
 
                   <td>{item.attribute_definitions?.length || 0}</td>
 
-                  <td className="actions">
+                  <td>
                     <button
                       className="secondary-button"
-                      onClick={() => openEdit(item.id)}
+                      onClick={() => {
+                        openEdit(item.id);
+                      }}
                     >
                       Edit
                     </button>

@@ -7,7 +7,7 @@ import AuthCallback from "./pages/AuthCallback";
 import AppLayout from "./layout/AppLayout";
 import { useEffect } from "react";
 
-import InventoryPage from "./pages_v2/InventoryPage/InventoryPage";
+// import InventoryPage from "./pages_v2/InventoryPage/InventoryPage";
 import ShipmentsPage from "./pages_v2/ShipmentsPage/ShipmentsPage";
 import DashboardPage from "./pages_v2/DashboardPage/DashboardPage";
 import ShipmentDetailPage from "./pages_v2/ShipmentDetailsPage/ShipmentDetailsPage";
@@ -26,6 +26,10 @@ import ApiDocsPage from "./pages_v2/ApiDocsPage/ApiDocsPage";
 import { RequireCompleteProfile } from "./auth/RequireCompleteProfile";
 import WarehouseMapTab from "./pages_v2/MapPage/MapPage";
 import CognitoUsersAdminPage from "./pages_v2/CognitoUsersAdminPage/CognitoUsersAdminPage";
+import DeclarationsPage from "./pages_v2/DeclarationsPage/DeclarationsPage";
+import DonorsPage from "./pages_v2/DonorsPage/DonorsPage";
+import InventoryPageV2 from "./pages_v2/InventoryPageV2/InventoryPageV2";
+import ShipmentAllocationPage from "./pages_v2/ShipmentAllocationPage/ShipmentAllocationPage";
 
 /* Simple login page */
 function LoginPage() {
@@ -81,12 +85,19 @@ export default function App() {
           path="/inventory"
           element={
             <RequireCompleteProfile>
-              <InventoryPage />
+              <InventoryPageV2 />
             </RequireCompleteProfile>
           }
         />
-        <Route path="/receiving" element={<ReceiveInventoryPage />} />
-        <Route path="/shipments" element={<ShipmentsPage />} />
+        <Route path="/inventory/receive" element={<ReceiveInventoryPage />} />
+        <Route
+          path="/shipments"
+          element={
+            <RequireCompleteProfile>
+              <ShipmentsPage />
+            </RequireCompleteProfile>
+          }
+        />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />
         <Route path="/shipments/new" element={<NewShipmentPage />} />
         <Route path="/profile" element={<MyProfilePage />} />
@@ -107,7 +118,14 @@ export default function App() {
           path="/admin/inventory-valuation"
           element={<InventoryValuationPage />}
         />
-        <Route path="/admin/cognito-users" element={<CognitoUsersAdminPage/>}/>
+        <Route
+          path="/admin/cognito-users"
+          element={<CognitoUsersAdminPage />}
+        />
+        <Route path="/admin/declarations" element={<DeclarationsPage />} />
+        <Route path="/admin/donors" element={<DonorsPage />} />
+        <Route path="/admin/allocation" element={<ShipmentAllocationPage />} />
+
         <Route path="/admin/docs" element={<ApiDocsPage />} />
         <Route path="/admin/map" element={<WarehouseMapTab />} />
       </Route>
