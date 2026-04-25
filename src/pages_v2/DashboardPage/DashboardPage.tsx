@@ -44,8 +44,9 @@ export default function DashboardPage() {
       setError(null);
       const result = await fetchDashboardSummary();
       setData(result);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error)
+        setError(err?.message || "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
