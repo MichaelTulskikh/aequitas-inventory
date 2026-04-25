@@ -23,7 +23,7 @@ import SystemSettingsPage from "./pages_v2/SystemSettingsPage/SystemSettingsPage
 import InboundShipmentsPage from "./pages_v2/InboundShipmentsPage/InboundShipmentsPage";
 import InventoryValuationPage from "./pages_v2/InventoryValuationPage/InventoryValuationPage";
 import ApiDocsPage from "./pages_v2/ApiDocsPage/ApiDocsPage";
-import { RequireCompleteProfile } from "./auth/RequireCompleteProfile";
+// import { RequireCompleteProfile } from "./auth/RequireCompleteProfile";
 import WarehouseMapTab from "./pages_v2/MapPage/MapPage";
 import CognitoUsersAdminPage from "./pages_v2/CognitoUsersAdminPage/CognitoUsersAdminPage";
 
@@ -80,9 +80,9 @@ export default function App() {
         <Route
           path="/inventory"
           element={
-            <RequireCompleteProfile>
-              <InventoryPage />
-            </RequireCompleteProfile>
+            // <RequireCompleteProfile>
+            <InventoryPage />
+            // </RequireCompleteProfile>
           }
         />
         <Route path="/receiving" element={<ReceiveInventoryPage />} />
@@ -107,7 +107,10 @@ export default function App() {
           path="/admin/inventory-valuation"
           element={<InventoryValuationPage />}
         />
-        <Route path="/admin/cognito-users" element={<CognitoUsersAdminPage/>}/>
+        <Route
+          path="/admin/cognito-users"
+          element={<CognitoUsersAdminPage />}
+        />
         <Route path="/admin/docs" element={<ApiDocsPage />} />
         <Route path="/admin/map" element={<WarehouseMapTab />} />
       </Route>

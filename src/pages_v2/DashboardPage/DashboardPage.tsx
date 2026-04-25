@@ -44,8 +44,9 @@ export default function DashboardPage() {
       setError(null);
       const result = await fetchDashboardSummary();
       setData(result);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error)
+        setError(err?.message || "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
@@ -155,7 +156,9 @@ export default function DashboardPage() {
                               </Link>
                             </td>
                             <td>
-                              <span className={`shipment-status status-${normalizeStatus(shipment.status)}`}>
+                              <span
+                                className={`shipment-status status-${normalizeStatus(shipment.status)}`}
+                              >
                                 {shipment.status}
                               </span>
                             </td>
@@ -216,9 +219,7 @@ export default function DashboardPage() {
 
           <section className="dashboard-section">
             <div className="dashboard-section-header">
-              <h2 className={styles.title}>
-                Available Inventory by Category
-              </h2>
+              <h2 className={styles.title}>Available Inventory by Category</h2>
               <Link to="/inventory" className={styles.link}>
                 Open inventory
               </Link>
@@ -383,7 +384,9 @@ export default function DashboardPage() {
                   <div className="dashboard-card">
                     {!summary.recent_adjustments ||
                     summary.recent_adjustments.length === 0 ? (
-                      <div className="dashboard-empty">No recent adjustments.</div>
+                      <div className="dashboard-empty">
+                        No recent adjustments.
+                      </div>
                     ) : (
                       <div className={styles.tableWrap}>
                         <table className="dashboard-table">
