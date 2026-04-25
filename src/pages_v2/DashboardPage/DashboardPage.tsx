@@ -80,45 +80,45 @@ export default function DashboardPage() {
           <section className="dashboard-section">
             <h2>Shipment Status Overview</h2>
 
-            <div className="dashboard-card-grid six">
-              <div className="dashboard-card">
-                <div className="stat-label">Draft</div>
-                <div className="stat-value">
+            <div className={styles.statusGrid}>
+              <div className={`${styles.statusCard} ${styles.statusDraft}`}>
+                <div className={styles.statusLabel}>Draft</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.draft}
                 </div>
               </div>
 
-              <div className="dashboard-card">
-                <div className="stat-label">Submitted</div>
-                <div className="stat-value">
+              <div className={`${styles.statusCard} ${styles.statusSubmitted}`}>
+                <div className={styles.statusLabel}>Submitted</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.submitted}
                 </div>
               </div>
 
-              <div className="dashboard-card">
-                <div className="stat-label">Approved</div>
-                <div className="stat-value">
+              <div className={`${styles.statusCard} ${styles.statusApproved}`}>
+                <div className={styles.statusLabel}>Approved</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.approved}
                 </div>
               </div>
 
-              <div className="dashboard-card">
-                <div className="stat-label">Fulfilled</div>
-                <div className="stat-value">
+              <div className={`${styles.statusCard} ${styles.statusFulfilled}`}>
+                <div className={styles.statusLabel}>Fulfilled</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.fulfilled}
                 </div>
               </div>
 
-              <div className="dashboard-card">
-                <div className="stat-label">Cancelled</div>
-                <div className="stat-value">
+              <div className={`${styles.statusCard} ${styles.statusCancelled}`}>
+                <div className={styles.statusLabel}>Cancelled</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.cancelled}
                 </div>
               </div>
 
-              <div className="dashboard-card">
-                <div className="stat-label">Rejected</div>
-                <div className="stat-value">
+              <div className={`${styles.statusCard} ${styles.statusRejected}`}>
+                <div className={styles.statusLabel}>Rejected</div>
+                <div className={styles.statusValue}>
                   {summary.shipments_by_status.rejected}
                 </div>
               </div>

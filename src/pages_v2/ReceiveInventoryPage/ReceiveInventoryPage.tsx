@@ -1,22 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchInventoryItems,
   fetchInventoryItemAttributeDefinitions,
   fetchInventoryLocationsTree,
+  fetchInboundShipmentLines,
   receiveInventory,
-} from "../../api/inventory";
+  type InboundShipmentLine,
+  type ReceiveInventoryInput,
+} from "../../api/inventory_v2";
 import {
   fetchInboundShipments,
   type InboundShipment,
-} from "../../api/inboundShipments";
-import {
-  attachLotImage,
-  requestLotImageUploadUrl,
-  uploadFileToPresignedUrl,
-} from "../../api/media";
+} from "../../api/inboundShipments_v2";
 import styles from "./ReceiveInventoryPage.module.css";
-import AppModal from "../../components/AppModal";
-import LocationQuickCreateForm from "../../components/LocationQuickCreateForm";
 
 type InventoryItemOption = {
   id: string;
@@ -52,18 +49,26 @@ type LocationNode = {
   path: string[];
 };
 
-function getCurrentLocalDateTime() {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-}
-
 function formatPath(path?: string[]) {
   return path?.length ? path.join(" / ") : "—";
 }
 
-function buildAttributeInitialValue(def: ItemAttributeDefinition) {
+function formatDateTime(value: string | null | undefined) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString();
+}
+
+function getCurrentIso() {
+  return new Date().toISOString();
+}
+
+function buildAttributeInitialValue(
+  def: ItemAttributeDefinition,
+  existing?: unknown,
+) {
+  if (existing !== undefined) return existing;
   if (def.data_type === "boolean") return false;
   return "";
 }
@@ -152,556 +157,18 @@ function renderInput(
   }
 }
 
-function normalizeSearchValue(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function itemSearchText(item: InventoryItemOption) {
-  return [
-    item.name,
-    item.description || "",
-    item.default_unit,
-    item.category?.name || "",
-    item.category?.path?.join(" ") || "",
-  ]
-    .join(" ")
-    .toLowerCase();
-}
-
-function rankAndFilterItems(
-  items: InventoryItemOption[],
-  query: string,
-): InventoryItemOption[] {
-  const normalized = normalizeSearchValue(query);
-
-  if (!normalized) {
-    return [...items]
-      .sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { numeric: true }),
-      )
-      .slice(0, 25);
-  }
-
-  const scored = items
-    .map((item) => {
-      const name = item.name.toLowerCase();
-      const categoryPath = (item.category?.path || [])
-        .join(" / ")
-        .toLowerCase();
-      const description = (item.description || "").toLowerCase();
-      const full = itemSearchText(item);
-
-      let score = 0;
-
-      if (name === normalized) score += 1000;
-      if (name.startsWith(normalized)) score += 500;
-      if (name.includes(normalized)) score += 250;
-      if (categoryPath.includes(normalized)) score += 100;
-      if (description.includes(normalized)) score += 50;
-      if (full.includes(normalized)) score += 25;
-
-      return { item, score };
-    })
-    .filter((entry) => entry.score > 0)
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return a.item.name.localeCompare(b.item.name, undefined, {
-        numeric: true,
-      });
-    });
-
-  return scored.slice(0, 30).map((entry) => entry.item);
-}
-
-type ReceiveInventoryItemPickerProps = {
-  items: InventoryItemOption[];
-  value: string;
-  disabled?: boolean;
-  onChange: (itemId: string) => void;
-};
-
-function ReceiveInventoryItemPicker({
-  items,
-  value,
-  disabled = false,
-  onChange,
-}: ReceiveInventoryItemPickerProps) {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const listboxId = "ri-page-item-listbox";
-
-  const selectedItem = useMemo(
-    () => items.find((item) => item.id === value) || null,
-    [items, value],
-  );
-
-  const filteredItems = useMemo(
-    () => rankAndFilterItems(items, query),
-    [items, query],
-  );
-
-  useEffect(() => {
-    if (selectedItem) {
-      setQuery(selectedItem.name);
-    } else {
-      setQuery("");
-    }
-  }, [selectedItem]);
-
-  useEffect(() => {
-    setHighlightedIndex(0);
-  }, [query]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!rootRef.current) return;
-      if (!rootRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  function handleSelect(item: InventoryItemOption) {
-    onChange(item.id);
-    setQuery(item.name);
-    setOpen(false);
-    setHighlightedIndex(0);
-  }
-
-  function handleClear() {
-    onChange("");
-    setQuery("");
-    setOpen(false);
-    setHighlightedIndex(0);
-  }
-
-  return (
-    <div
-      ref={rootRef}
-      className={`${styles.itemPicker} ${open ? styles.itemPickerOpen : ""}`}
-    >
-      <div className={styles.itemInputRow}>
-        <input
-          type="text"
-          value={query}
-          placeholder="Search item name, category, description..."
-          disabled={disabled}
-          autoComplete="off"
-          className={styles.itemInput}
-          role="combobox"
-          aria-expanded={open}
-          aria-controls={listboxId}
-          aria-autocomplete="list"
-          onFocus={() => setOpen(true)}
-          onChange={(e) => {
-            const next = e.target.value;
-            setQuery(next);
-            setOpen(true);
-
-            if (selectedItem && next.trim() !== selectedItem.name) {
-              onChange("");
-            }
-          }}
-          onKeyDown={(e) => {
-            if (!open && (e.key === "ArrowDown" || e.key === "Enter")) {
-              setOpen(true);
-              return;
-            }
-
-            if (!filteredItems.length) return;
-
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              setHighlightedIndex((prev) =>
-                Math.min(prev + 1, filteredItems.length - 1),
-              );
-            }
-
-            if (e.key === "ArrowUp") {
-              e.preventDefault();
-              setHighlightedIndex((prev) => Math.max(prev - 1, 0));
-            }
-
-            if (e.key === "Enter" && open) {
-              e.preventDefault();
-              const item = filteredItems[highlightedIndex];
-              if (item) handleSelect(item);
-            }
-
-            if (e.key === "Escape") {
-              setOpen(false);
-            }
-          }}
-        />
-
-        {query && !disabled && (
-          <button
-            type="button"
-            className={styles.itemClear}
-            onClick={handleClear}
-            aria-label="Clear selected item"
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
-      {open && (
-        <div className={styles.itemDropdownShell}>
-          <div id={listboxId} className={styles.itemDropdown} role="listbox">
-            {filteredItems.length === 0 ? (
-              <div className={styles.itemEmpty}>No matching items found.</div>
-            ) : (
-              filteredItems.map((item, index) => {
-                const active = index === highlightedIndex;
-                const categoryPath = item.category?.path?.length
-                  ? item.category.path.join(" / ")
-                  : "";
-
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    role="option"
-                    aria-selected={active}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => handleSelect(item)}
-                    className={`${styles.itemOption} ${
-                      active ? styles.itemOptionActive : ""
-                    }`}
-                  >
-                    <div className={styles.itemOptionTop}>
-                      <strong className={styles.itemOptionName}>
-                        {item.name}
-                      </strong>
-
-                      <span className={styles.itemOptionUnit}>
-                        {item.default_unit}
-                      </span>
-                    </div>
-
-                    {categoryPath && (
-                      <div className={styles.itemOptionMeta}>
-                        {categoryPath}
-                      </div>
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-type ReceiveInventoryLocationPickerModalProps = {
-  open: boolean;
-  locations: LocationNode[];
-  value: string;
-  onClose: () => void;
-  onConfirm: (locationId: string) => void;
-};
-
-function ReceiveInventoryLocationPickerModal({
-  open,
-  locations,
-  value,
-  onClose,
-  onConfirm,
-}: ReceiveInventoryLocationPickerModalProps) {
-  const [query, setQuery] = useState("");
-  const [draftLocationId, setDraftLocationId] = useState(value);
-  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    if (!open) return;
-
-    setDraftLocationId(value);
-    setQuery("");
-
-    const nextExpanded: Record<string, boolean> = {};
-    const selected = locations.find((loc) => loc.id === value);
-
-    if (selected?.path?.length) {
-      for (let i = 0; i < selected.path.length; i += 1) {
-        const partialPath = selected.path.slice(0, i + 1);
-        const match = locations.find(
-          (loc) =>
-            loc.path.length === partialPath.length &&
-            loc.path.every((segment, index) => segment === partialPath[index]),
-        );
-        if (match) {
-          nextExpanded[match.id] = true;
-        }
-      }
-    }
-
-    setExpandedIds(nextExpanded);
-  }, [open, value, locations]);
-
-  const childrenByParent = useMemo(() => {
-    const map = new Map<string | null, LocationNode[]>();
-
-    for (const location of locations) {
-      const parentId = location.parent_location_id ?? null;
-      const siblings = map.get(parentId) || [];
-      siblings.push(location);
-      map.set(parentId, siblings);
-    }
-
-    for (const [, nodes] of map) {
-      nodes.sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { numeric: true }),
-      );
-    }
-
-    return map;
-  }, [locations]);
-
-  const filteredLocationIds = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return null;
-
-    const matched = new Set<string>();
-
-    for (const location of locations) {
-      const haystack = [
-        location.name,
-        location.code || "",
-        location.type || "",
-        location.path.join(" / "),
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      if (haystack.includes(normalized)) {
-        matched.add(location.id);
-
-        let parentId = location.parent_location_id ?? null;
-        while (parentId) {
-          matched.add(parentId);
-          const parent = locations.find((loc) => loc.id === parentId);
-          parentId = parent?.parent_location_id ?? null;
-        }
-      }
-    }
-
-    return matched;
-  }, [locations, query]);
-
-  const selectedLocation = useMemo(
-    () => locations.find((loc) => loc.id === draftLocationId) || null,
-    [locations, draftLocationId],
-  );
-
-  function toggleExpanded(locationId: string) {
-    setExpandedIds((prev) => ({
-      ...prev,
-      [locationId]: !prev[locationId],
-    }));
-  }
-
-  function expandAllVisible() {
-    const next: Record<string, boolean> = {};
-    for (const location of locations) {
-      if (
-        childrenByParent.has(location.id) &&
-        (filteredLocationIds === null || filteredLocationIds.has(location.id))
-      ) {
-        next[location.id] = true;
-      }
-    }
-    setExpandedIds(next);
-  }
-
-  function collapseAll() {
-    setExpandedIds({});
-  }
-
-  function renderTree(parentId: string | null, depth = 0): React.ReactNode {
-    const nodes = childrenByParent.get(parentId) || [];
-
-    return nodes.map((location) => {
-      if (filteredLocationIds && !filteredLocationIds.has(location.id)) {
-        return null;
-      }
-
-      const children = childrenByParent.get(location.id) || [];
-      const hasChildren = children.length > 0;
-      const isExpanded =
-        Boolean(expandedIds[location.id]) || Boolean(query.trim());
-      const isSelected = location.id === draftLocationId;
-
-      return (
-        <div key={location.id} className={styles.locationTreeNode}>
-          <div
-            className={`${styles.locationTreeRow} ${
-              isSelected ? styles.locationTreeRowSelected : ""
-            }`}
-          >
-            <div className={styles.locationTreeMain}>
-              {hasChildren ? (
-                <button
-                  type="button"
-                  className={styles.locationTreeToggle}
-                  onClick={() => toggleExpanded(location.id)}
-                  aria-label={
-                    isExpanded ? "Collapse location" : "Expand location"
-                  }
-                  aria-expanded={isExpanded}
-                >
-                  <span
-                    className={`${styles.locationTreeCaret} ${
-                      isExpanded ? styles.locationTreeCaretExpanded : ""
-                    }`}
-                  >
-                    ▸
-                  </span>
-                </button>
-              ) : (
-                <span className={styles.locationTreeToggleSpacer} />
-              )}
-
-              <button
-                type="button"
-                className={styles.locationTreeSelect}
-                onClick={() => setDraftLocationId(location.id)}
-              >
-                <span
-                  className={styles.locationTreeSelectInner}
-                  style={{ paddingLeft: `${depth * 18}px` }}
-                >
-                  <span className={styles.locationTreeName}>
-                    {location.name}
-                  </span>
-                  <span className={styles.locationTreeType}>
-                    {location.type}
-                  </span>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {hasChildren && isExpanded && (
-            <div className={styles.locationTreeChildren}>
-              {renderTree(location.id, depth + 1)}
-            </div>
-          )}
-        </div>
-      );
-    });
-  }
-
-  if (!open) return null;
-
-  return (
-    <AppModal title="Select Location" width="980px" onClose={onClose}>
-      <div className={styles.locationModal}>
-        <div className={styles.locationModalTopbar}>
-          <div className={styles.locationModalSearch}>
-            <label className={styles.locationModalLabel}>Search Location</label>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, path, code, or type..."
-              className={styles.locationModalInput}
-              autoFocus
-            />
-          </div>
-
-          <div className={styles.locationModalTools}>
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={expandAllVisible}
-            >
-              Expand All
-            </button>
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={collapseAll}
-            >
-              Collapse All
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.locationTreePanel}>
-          {locations.length === 0 ? (
-            <div className={styles.locationTreeEmpty}>
-              No locations available.
-            </div>
-          ) : filteredLocationIds && filteredLocationIds.size === 0 ? (
-            <div className={styles.locationTreeEmpty}>
-              No matching locations found.
-            </div>
-          ) : (
-            renderTree(null)
-          )}
-        </div>
-
-        <div className={styles.locationModalPreview}>
-          <h3 className={styles.locationModalPreviewTitle}>
-            Selected Location
-          </h3>
-
-          {selectedLocation ? (
-            <div className={styles.locationModalPreviewCard}>
-              <div>
-                <strong>Name:</strong> {selectedLocation.name}
-              </div>
-              <div>
-                <strong>Path:</strong> {formatPath(selectedLocation.path)}
-              </div>
-              <div>
-                <strong>Type:</strong> {selectedLocation.type}
-              </div>
-              <div>
-                <strong>Code:</strong> {selectedLocation.code || "—"}
-              </div>
-            </div>
-          ) : (
-            <div className={styles.locationModalPreviewEmpty}>
-              No location selected.
-            </div>
-          )}
-        </div>
-
-        <div className={styles.locationModalActions}>
-          <button type="button" className="secondary-button" onClick={onClose}>
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            className="app-button"
-            disabled={!draftLocationId}
-            onClick={() => {
-              if (!draftLocationId) return;
-              onConfirm(draftLocationId);
-            }}
-          >
-            Use Location
-          </button>
-        </div>
-      </div>
-    </AppModal>
-  );
-}
+console.log(renderInput, normalizeAttributeValue) // TODO - REMOVE TEMPORARY FIX 3am i want sleep
 
 export default function ReceiveInventoryPage() {
+  const [searchParams] = useSearchParams();
+
+  const shipmentIdFromUrl = searchParams.get("inbound_shipment_id") || "";
+  const lineIdFromUrl = searchParams.get("inbound_shipment_line_id") || "";
+  const itemIdFromUrl = searchParams.get("item_id") || "";
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -710,32 +177,36 @@ export default function ReceiveInventoryPage() {
   const [inboundShipments, setInboundShipments] = useState<InboundShipment[]>(
     [],
   );
+  const [inboundShipmentLines, setInboundShipmentLines] = useState<
+    InboundShipmentLine[]
+  >([]);
   const [attributeDefs, setAttributeDefs] = useState<ItemAttributeDefinition[]>(
     [],
   );
 
-  const [itemId, setItemId] = useState("");
-  const [itemSearch, setItemSearch] = useState("");
-  const [itemSearchOpen, setItemSearchOpen] = useState(false);
-  const [highlightedItemIndex, setHighlightedItemIndex] = useState(0);
-  console.log(itemSearchOpen, highlightedItemIndex); // TODO: REMOVE
-
+  const [inboundShipmentId, setInboundShipmentId] = useState(shipmentIdFromUrl);
+  const [inboundShipmentLineId, setInboundShipmentLineId] =
+    useState(lineIdFromUrl);
+  const [itemId, setItemId] = useState(itemIdFromUrl);
   const [locationId, setLocationId] = useState("");
-  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
-  const [inboundShipmentId, setInboundShipmentId] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [visibilityTier, setVisibilityTier] = useState<1 | 2 | 3>(3);
   const [reason, setReason] = useState("");
-  const [sourceNote, setSourceNote] = useState("");
-  const [status, setStatus] = useState("active");
-
   const [attributeValues, setAttributeValues] = useState<
     Record<string, unknown>
   >({});
 
-  const [lotImageFiles, setLotImageFiles] = useState<File[]>([]);
-  const [locationModalOpen, setLocationModalOpen] = useState(false);
+  const selectedShipment = useMemo(
+    () => inboundShipments.find((s) => s.id === inboundShipmentId) || null,
+    [inboundShipments, inboundShipmentId],
+  );
 
-  const itemSearchRef = useRef<HTMLDivElement | null>(null);
+  const selectedLine = useMemo(
+    () =>
+      inboundShipmentLines.find((line) => line.id === inboundShipmentLineId) ||
+      null,
+    [inboundShipmentLines, inboundShipmentLineId],
+  );
 
   const selectedItem = useMemo(
     () => items.find((item) => item.id === itemId) || null,
@@ -747,10 +218,8 @@ export default function ReceiveInventoryPage() {
     [locations, locationId],
   );
 
-  const selectedInboundShipment = useMemo(
-    () => inboundShipments.find((s) => s.id === inboundShipmentId) || null,
-    [inboundShipments, inboundShipmentId],
-  );
+  const shipmentHasNoLines =
+    Boolean(inboundShipmentId) && inboundShipmentLines.length === 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -760,19 +229,17 @@ export default function ReceiveInventoryPage() {
         setLoading(true);
         setError(null);
 
-        const [itemsRes, locationsRes, inboundShipmentsRes] = await Promise.all(
-          [
-            fetchInventoryItems(),
-            fetchInventoryLocationsTree(),
-            fetchInboundShipments(),
-          ],
-        );
+        const [itemsRes, locationsRes, shipmentsRes] = await Promise.all([
+          fetchInventoryItems(),
+          fetchInventoryLocationsTree(),
+          fetchInboundShipments(),
+        ]);
 
         if (cancelled) return;
 
         setItems(itemsRes.items || []);
         setLocations(locationsRes.locations || []);
-        setInboundShipments(inboundShipmentsRes.shipments || []);
+        setInboundShipments(shipmentsRes.shipments || []);
       } catch (err: any) {
         if (!cancelled) {
           setError(err?.message || "Failed to load receive inventory page");
@@ -794,6 +261,67 @@ export default function ReceiveInventoryPage() {
   useEffect(() => {
     let cancelled = false;
 
+    async function loadLines() {
+      if (!inboundShipmentId) {
+        setInboundShipmentLines([]);
+        setInboundShipmentLineId("");
+        return;
+      }
+
+      try {
+        const res = await fetchInboundShipmentLines(inboundShipmentId);
+        if (cancelled) return;
+
+        const nextLines = res.lines || [];
+        setInboundShipmentLines(nextLines);
+
+        const stillExists = nextLines.some(
+          (line) => line.id === inboundShipmentLineId,
+        );
+        if (!stillExists) {
+          if (
+            lineIdFromUrl &&
+            nextLines.some((line) => line.id === lineIdFromUrl)
+          ) {
+            setInboundShipmentLineId(lineIdFromUrl);
+          } else {
+            setInboundShipmentLineId("");
+          }
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message || "Failed to load inbound shipment lines");
+          setInboundShipmentLines([]);
+          setInboundShipmentLineId("");
+        }
+      }
+    }
+
+    loadLines();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [inboundShipmentId, lineIdFromUrl]);
+
+  useEffect(() => {
+    if (!selectedLine) {
+      if (!lineIdFromUrl) {
+        setItemId("");
+      }
+      return;
+    }
+
+    setItemId(selectedLine.item_id);
+
+    if (!quantity) {
+      setQuantity(String(selectedLine.quantity_remaining));
+    }
+  }, [selectedLine, lineIdFromUrl, quantity]);
+
+  useEffect(() => {
+    let cancelled = false;
+
     async function loadAttributes() {
       if (!itemId) {
         setAttributeDefs([]);
@@ -808,10 +336,16 @@ export default function ReceiveInventoryPage() {
         const defs = res.attributes || [];
         setAttributeDefs(defs);
 
+        const sourceAttrs = selectedLine?.attributes || {};
         const nextValues: Record<string, unknown> = {};
+
         for (const def of defs) {
-          nextValues[def.attribute_key] = buildAttributeInitialValue(def);
+          nextValues[def.attribute_key] = buildAttributeInitialValue(
+            def,
+            sourceAttrs[def.attribute_key],
+          );
         }
+
         setAttributeValues(nextValues);
       } catch (err: any) {
         if (!cancelled) {
@@ -827,62 +361,49 @@ export default function ReceiveInventoryPage() {
     return () => {
       cancelled = true;
     };
-  }, [itemId]);
-
-  useEffect(() => {
-    if (selectedItem) {
-      setItemSearch(selectedItem.name);
-    }
-  }, [selectedItem]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!itemSearchRef.current) return;
-      if (!itemSearchRef.current.contains(event.target as Node)) {
-        setItemSearchOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    setHighlightedItemIndex(0);
-  }, [itemSearch]);
+  }, [itemId, selectedLine]);
 
   const requiredMissing = useMemo(() => {
     const missing: string[] = [];
 
-    if (!inboundShipmentId) missing.push("Inbound Shipment");
+    if (!inboundShipmentId) {
+      missing.push("Inbound Shipment");
+      return missing;
+    }
+
+    if (shipmentHasNoLines) {
+      return missing;
+    }
+
+    if (!inboundShipmentLineId) missing.push("Inbound Shipment Line");
     if (!itemId) missing.push("Item");
     if (!locationId) missing.push("Location");
 
     const qty = Number(quantity);
     if (!Number.isFinite(qty) || qty <= 0) missing.push("Quantity");
 
-    for (const def of attributeDefs) {
-      if (!def.is_required) continue;
+    // for (const def of attributeDefs) {
+    //   if (!def.is_required) continue;
 
-      const raw = attributeValues[def.attribute_key];
+    //   const raw = attributeValues[def.attribute_key];
 
-      if (def.data_type === "boolean") {
-        if (raw !== true) {
-          missing.push(def.label);
-        }
-        continue;
-      }
+    //   if (def.data_type === "boolean") {
+    //     if (raw !== true) {
+    //       missing.push(def.label);
+    //     }
+    //     continue;
+    //   }
 
-      if (raw === null || raw === undefined || String(raw).trim() === "") {
-        missing.push(def.label);
-      }
-    }
+    //   if (raw === null || raw === undefined || String(raw).trim() === "") {
+    //     missing.push(def.label);
+    //   }
+    // }
 
     return missing;
   }, [
     inboundShipmentId,
+    inboundShipmentLineId,
+    shipmentHasNoLines,
     itemId,
     locationId,
     quantity,
@@ -895,6 +416,13 @@ export default function ReceiveInventoryPage() {
     setError(null);
     setSuccess(null);
 
+    if (shipmentHasNoLines) {
+      setError(
+        "This inbound shipment has no lines yet. Add a line first before receiving inventory.",
+      );
+      return;
+    }
+
     if (requiredMissing.length > 0) {
       setError(`Missing required fields: ${requiredMissing.join(", ")}`);
       return;
@@ -902,68 +430,48 @@ export default function ReceiveInventoryPage() {
 
     const qty = Number(quantity);
 
-    const attributes: Record<string, unknown> = {};
-    for (const def of attributeDefs) {
-      const normalized = normalizeAttributeValue(
-        def,
-        attributeValues[def.attribute_key],
-      );
+    // const attributes: Record<string, unknown> = {};
+    // for (const def of attributeDefs) {
+    //   const normalized = normalizeAttributeValue(
+    //     def,
+    //     attributeValues[def.attribute_key],
+    //   );
 
-      if (
-        normalized !== null &&
-        normalized !== undefined &&
-        normalized !== ""
-      ) {
-        attributes[def.attribute_key] = normalized;
-      }
-    }
+    //   if (normalized !== null && normalized !== undefined && normalized !== "") {
+    //     attributes[def.attribute_key] = normalized;
+    //   }
+    // }
 
     try {
       setSaving(true);
 
-      const result = await receiveInventory({
-        item_id: itemId,
+      const payload: ReceiveInventoryInput = {
+        inbound_shipment_line_id: inboundShipmentLineId,
         location_id: locationId,
-        inbound_shipment_id: inboundShipmentId,
         quantity: qty,
-        attributes,
+        // attributes,
+        visibility_tier: visibilityTier,
         reason: reason || undefined,
-        received_at: getCurrentLocalDateTime(),
-        source_note: sourceNote || undefined,
-        status,
-      });
+        received_at: getCurrentIso(),
+        // ...(Object.keys(attributes).length > 0 ? { attributes } : {})
+      };
 
-      const lotId = result.inventory_lot_id;
+      const result = await receiveInventory(payload);
 
-      for (let i = 0; i < lotImageFiles.length; i += 1) {
-        const file = lotImageFiles[i];
-
-        const uploadInit = await requestLotImageUploadUrl(lotId, {
-          filename: file.name,
-          content_type: file.type,
-        });
-
-        await uploadFileToPresignedUrl(file, uploadInit.upload_url);
-
-        await attachLotImage(lotId, {
-          s3_key: uploadInit.s3_key,
-          caption: file.name,
-          is_primary: i === 0,
-        });
-      }
-
-      setSuccess(`Inventory received successfully. Lot: ${lotId}`);
+      setSuccess(
+        `Inventory received successfully. Lot: ${result.inventory_lot_id}`,
+      );
 
       setQuantity("");
       setReason("");
-      setSourceNote("");
-      setLotImageFiles([]);
-      setItemId("");
-      setItemSearch("");
       setLocationId("");
       setInboundShipmentId("");
+      setInboundShipmentLineId("");
+      setInboundShipmentLines([]);
+      setItemId("");
       setAttributeDefs([]);
       setAttributeValues({});
+      setVisibilityTier(3);
     } catch (err: any) {
       setError(err?.message || "Failed to receive inventory");
     } finally {
@@ -986,9 +494,12 @@ export default function ReceiveInventoryPage() {
     <div className={`page-shell ${styles.page}`}>
       <div className={styles.header}>
         <div>
+          <div className={styles.breadcrumb}>
+            <Link to="/">Home</Link> / Receive Inventory
+          </div>
           <h1 className={styles.title}>Receive Inventory</h1>
           <p className={styles.subtitle}>
-            Receive stock into a matching lot or create a new lot automatically.
+            Put discovered inbound shipment lines into inventory lots.
           </p>
         </div>
       </div>
@@ -999,7 +510,7 @@ export default function ReceiveInventoryPage() {
       <form className={styles.layout} onSubmit={handleSubmit}>
         <section className="shipment-panel">
           <div className="shipment-panel-header">
-            <h2>Shipment, Item and Quantity</h2>
+            <h2>Inbound Source</h2>
           </div>
 
           <div className="my-profile-grid">
@@ -1007,44 +518,140 @@ export default function ReceiveInventoryPage() {
               <label>Inbound Shipment *</label>
               <select
                 value={inboundShipmentId}
-                onChange={(e) => setInboundShipmentId(e.target.value)}
+                onChange={(e) => {
+                  setInboundShipmentId(e.target.value);
+                  setInboundShipmentLineId("");
+                  setItemId("");
+                  setAttributeDefs([]);
+                  setAttributeValues({});
+                  setQuantity("");
+                }}
                 disabled={saving}
               >
                 <option value="">Select inbound shipment</option>
                 {inboundShipments.map((shipment) => (
                   <option key={shipment.id} value={shipment.id}>
-                    {shipment.inbound_code}
-                    {shipment.source_name ? ` — ${shipment.source_name}` : ""}
+                    {shipment.shipment_number}
+                    {shipment.donor_display_name
+                      ? ` — ${shipment.donor_display_name}`
+                      : ""}
                     {shipment.status ? ` (${shipment.status})` : ""}
                   </option>
                 ))}
               </select>
-              {/* <div className="form-help">
-                If the shipment does not exist yet, create it on the Inbound
-                Shipments page first.
-              </div> */}
+            </div>
+
+            <div className="form-group span-2">
+              <label>Inbound Shipment Line *</label>
+              <select
+                value={inboundShipmentLineId}
+                onChange={(e) => {
+                  const nextId = e.target.value;
+                  setInboundShipmentLineId(nextId);
+
+                  const line =
+                    inboundShipmentLines.find((entry) => entry.id === nextId) ||
+                    null;
+
+                  if (line) {
+                    setItemId(line.item_id);
+                    setQuantity(String(line.quantity_remaining));
+                  } else {
+                    setItemId("");
+                    setQuantity("");
+                  }
+                }}
+                disabled={
+                  saving ||
+                  !inboundShipmentId ||
+                  inboundShipmentLines.length === 0
+                }
+              >
+                <option value="">
+                  {shipmentHasNoLines
+                    ? "No inbound lines on this shipment"
+                    : "Select inbound shipment line"}
+                </option>
+
+                {inboundShipmentLines.map((line) => (
+                  <option key={line.id} value={line.id}>
+                    {`${line.item_name || line.item_id} -- Total ${line.quantity_received}, Remaining ${line.quantity_remaining}`}
+                  </option>
+                ))}
+              </select>
+
+              {shipmentHasNoLines && (
+                <div className="form-help">
+                  This shipment has no inbound lines yet. Add at least one line
+                  on the Inbound Shipments page before receiving inventory.
+                </div>
+              )}
             </div>
 
             <div className="form-group">
-              <label>Item *</label>
+              <label>Item</label>
+              <input
+                value={selectedItem?.name || selectedLine?.item_name || ""}
+                disabled
+              />
+              <div className="form-help">
+                Item is determined by the selected inbound shipment line.
+              </div>
+            </div>
 
-              <ReceiveInventoryItemPicker
-                items={items}
-                value={itemId}
-                disabled={saving}
-                onChange={(nextItemId) => {
-                  setItemId(nextItemId);
+            <div className="form-group">
+              <label>Default Unit</label>
+              <input value={selectedItem?.default_unit || ""} disabled />
+            </div>
 
-                  if (!nextItemId) {
-                    setAttributeDefs([]);
-                    setAttributeValues({});
-                  }
-                }}
+            <div className="form-group">
+              <label>Discovered Quantity</label>
+              <input
+                value={
+                  selectedLine ? String(selectedLine.quantity_received) : ""
+                }
+                disabled
               />
             </div>
 
             <div className="form-group">
-              <label>Quantity *</label>
+              <label>Line Received At</label>
+              <input
+                value={
+                  selectedLine ? formatDateTime(selectedLine.received_at) : ""
+                }
+                disabled
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="shipment-panel">
+          <div className="shipment-panel-header">
+            <h2>Putaway Details</h2>
+          </div>
+
+          <div className="my-profile-grid">
+            <div className="form-group span-2">
+              <label>Location *</label>
+              <select
+                value={locationId}
+                onChange={(e) => setLocationId(e.target.value)}
+                disabled={saving}
+              >
+                <option value="">Select location</option>
+                {locations
+                  .filter((loc) => loc.is_active !== false)
+                  .map((loc) => (
+                    <option key={loc.id} value={loc.id}>
+                      {formatPath(loc.path)}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Quantity to Receive *</label>
               <input
                 type="number"
                 min="0"
@@ -1056,31 +663,33 @@ export default function ReceiveInventoryPage() {
             </div>
 
             <div className="form-group">
-              <label>Default Unit</label>
-              <input value={selectedItem?.default_unit || ""} disabled />
-            </div>
-
-            <div className="form-group">
-              <label>Status</label>
+              <label>Visibility Tier</label>
               <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                value={String(visibilityTier)}
+                onChange={(e) =>
+                  setVisibilityTier(Number(e.target.value) as 1 | 2 | 3)
+                }
                 disabled={saving}
               >
-                <option value="active">Active</option>
-                <option value="quarantined">Quarantined</option>
-                <option value="exhausted">Exhausted</option>
-                <option value="archived">Archived</option>
+                <option value="1">1 — Aequitas only</option>
+                <option value="2">2 — Trusted people</option>
+                <option value="3">3 — Everyone</option>
               </select>
             </div>
-          </div>
 
-          {selectedItem?.description && (
-            <div className="form-help">{selectedItem.description}</div>
-          )}
+            <div className="form-group span-2">
+              <label>Reason</label>
+              <input
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                disabled={saving}
+                placeholder="Initial sort, shelf placement, etc."
+              />
+            </div>
+          </div>
         </section>
 
-        <section className="shipment-panel">
+        {/* <section className="shipment-panel">
           <div className="shipment-panel-header">
             <h2>Lot Attributes</h2>
           </div>
@@ -1111,103 +720,28 @@ export default function ReceiveInventoryPage() {
               ))}
             </div>
           )}
-        </section>
+        </section> */}
 
         <section className="shipment-panel">
           <div className="shipment-panel-header">
-            <h2>Location and Source</h2>
+            <h2>Inbound Line Attributes</h2>
           </div>
 
-          <div className="my-profile-grid">
-            <div className="form-group span-2">
-              <label>Location *</label>
-
-              <div className={styles.locationRow}>
-                <button
-                  type="button"
-                  className={styles.locationTrigger}
-                  onClick={() => setLocationPickerOpen(true)}
-                  disabled={saving}
-                >
-                  <span className={styles.locationTriggerLabel}>
-                    {selectedLocation
-                      ? formatPath(selectedLocation.path)
-                      : "Select location"}
-                  </span>
-                </button>
-
-                {locationId && !saving && (
-                  <button
-                    type="button"
-                    className={styles.locationClear}
-                    onClick={() => setLocationId("")}
-                  >
-                    Clear
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => setLocationModalOpen(true)}
-                  disabled={saving}
-                >
-                  New Location
-                </button>
-              </div>
+          {!selectedLine?.attributes ||
+          Object.keys(selectedLine.attributes).length === 0 ? (
+            <div className="dashboard-empty">
+              No attributes on this inbound line.
             </div>
-
-            <div className="form-group">
-              <label>Reason</label>
-              <input
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                disabled={saving}
-                placeholder="Donation intake, partner transfer, etc."
-              />
-            </div>
-
-            <div className="form-group span-2">
-              <label>Source Note</label>
-              <textarea
-                rows={4}
-                value={sourceNote}
-                onChange={(e) => setSourceNote(e.target.value)}
-                disabled={saving}
-                placeholder="Optional source / intake details"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="shipment-panel">
-          <div className="shipment-panel-header">
-            <h2>Lot Images</h2>
-          </div>
-
-          <div className="form-group">
-            <label>Upload or Take Photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              multiple
-              onChange={(e) =>
-                setLotImageFiles(Array.from(e.target.files || []))
-              }
-              disabled={saving}
-            />
-            <div className="form-help">
-              These images will be attached to the received lot and override the
-              default item image when present.
-            </div>
-          </div>
-
-          {lotImageFiles.length > 0 && (
-            <div className="form-help">
-              Selected files: {lotImageFiles.map((f) => f.name).join(", ")}
-            </div>
+          ) : (
+            <pre className={styles.jsonBlock}>
+              {JSON.stringify(selectedLine.attributes, null, 2)}
+            </pre>
           )}
+
+          <div className="form-help">
+            Attributes come from the inbound shipment line and cannot be edited
+            during putaway.
+          </div>
         </section>
 
         <section className="shipment-panel">
@@ -1218,31 +752,43 @@ export default function ReceiveInventoryPage() {
           <div className={styles.review}>
             <div>
               <strong>Inbound Shipment:</strong>{" "}
-              {selectedInboundShipment
-                ? `${selectedInboundShipment.inbound_code}${
-                    selectedInboundShipment.source_name
-                      ? ` — ${selectedInboundShipment.source_name}`
+              {selectedShipment
+                ? `${selectedShipment.shipment_number}${
+                    selectedShipment.donor_display_name
+                      ? ` — ${selectedShipment.donor_display_name}`
                       : ""
                   }`
                 : "—"}
             </div>
+
             <div>
-              <strong>Item:</strong> {selectedItem?.name || "—"}
+              <strong>Inbound Line:</strong>{" "}
+              {selectedLine
+                ? `${selectedLine.item_name || selectedLine.item_id} — qty ${selectedLine.quantity_received}`
+                : "—"}
             </div>
+
+            <div>
+              <strong>Item:</strong>{" "}
+              {selectedItem?.name || selectedLine?.item_name || "—"}
+            </div>
+
             <div>
               <strong>Quantity:</strong> {quantity || "—"}{" "}
               {selectedItem?.default_unit || ""}
             </div>
+
             <div>
               <strong>Location:</strong>{" "}
               {selectedLocation ? formatPath(selectedLocation.path) : "—"}
             </div>
+
             <div>
-              <strong>Status:</strong> {status}
+              <strong>Visibility Tier:</strong> {visibilityTier}
             </div>
           </div>
 
-          {requiredMissing.length > 0 && (
+          {requiredMissing.length > 0 && !shipmentHasNoLines && (
             <div className="form-help">
               Missing required fields: {requiredMissing.join(", ")}
             </div>
@@ -1252,47 +798,18 @@ export default function ReceiveInventoryPage() {
             <button
               type="submit"
               className="app-button"
-              disabled={saving || requiredMissing.length > 0}
+              disabled={
+                saving ||
+                shipmentHasNoLines ||
+                requiredMissing.length > 0 ||
+                selectedLine?.is_fully_received
+              }
             >
               {saving ? "Receiving..." : "Receive Inventory"}
             </button>
           </div>
         </section>
       </form>
-
-      {locationModalOpen && (
-        <AppModal
-          title="Create Location"
-          width="720px"
-          onClose={() => setLocationModalOpen(false)}
-        >
-          <LocationQuickCreateForm
-            locations={locations}
-            initialType="box"
-            onCancel={() => setLocationModalOpen(false)}
-            onCreated={async (location) => {
-              const res = await fetchInventoryLocationsTree();
-              const nextLocations = res.locations || [];
-              setLocations(nextLocations);
-              setLocationId(location.id);
-              setLocationModalOpen(false);
-            }}
-          />
-        </AppModal>
-      )}
-
-      {locationPickerOpen && (
-        <ReceiveInventoryLocationPickerModal
-          open={locationPickerOpen}
-          locations={locations}
-          value={locationId}
-          onClose={() => setLocationPickerOpen(false)}
-          onConfirm={(nextLocationId) => {
-            setLocationId(nextLocationId);
-            setLocationPickerOpen(false);
-          }}
-        />
-      )}
     </div>
   );
 }

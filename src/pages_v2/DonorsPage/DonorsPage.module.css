@@ -1,0 +1,105 @@
+.page {}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.form {
+  padding: 10px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 14px 14px;
+  flex-wrap: wrap;
+}
+
+.toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  flex-wrap: wrap;
+}
+
+.summary {
+  color: var(--text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.primaryCell {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.secondaryCell {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: normal;
+}
+
+.noteCell {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  max-width: 320px;
+  white-space: normal;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .formActions {
+    justify-content: stretch;
+  }
+
+  .formActions :global(button),
+  .formActions :global(a) {
+    width: 100%;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .summary {
+    white-space: normal;
+  }
+}

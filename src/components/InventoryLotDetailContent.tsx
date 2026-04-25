@@ -292,7 +292,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
         </section>
 
         <section className="panel">
-          <div className={`panel header ${styles.headerWithActions}`}>
+          <div className={`panel-header ${styles.headerWithActions}`}>
             <h2>Location</h2>
 
             {isAdmin && (
@@ -399,7 +399,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
         </section>
 
         <section className="panel">
-          <div className={`panel header ${styles.headerWithActions}`}>
+          <div className={`panel-header ${styles.headerWithActions}`}>
             <h2>Quantities</h2>
 
             {isPrivileged && (
@@ -494,7 +494,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
         </section>
 
         <section className="panel">
-          <div className={`panel header ${styles.headerWithActions}`}>
+          <div className={`panel-header ${styles.headerWithActions}`}>
             <h2>Attributes</h2>
 
             {isPrivileged && (

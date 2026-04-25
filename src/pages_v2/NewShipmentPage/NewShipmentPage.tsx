@@ -61,6 +61,8 @@ export default function NewShipmentPage() {
   const [requestedQuantity, setRequestedQuantity] = useState("");
   const [requestedAttributesText, setRequestedAttributesText] = useState("{}");
 
+  console.log(items, setItemId, setRequestedAttributesText, setRequestedQuantity) // REMOVE - TEMPORARY FIX 
+
   const complete = useMemo(() => isProfileComplete(profile), [profile]);
 
   useEffect(() => {
@@ -254,11 +256,11 @@ export default function NewShipmentPage() {
               />
             </div>
 
-            <div className="form-help">
+            {/* <div className="form-help">
               You can create an empty draft shipment, or add the first line now.
-            </div>
+            </div> */}
 
-            <div className={styles.lineGrid}>
+            {/* <div className={styles.lineGrid}>
               <div className="form-group">
                 <label>First Item (optional)</label>
                 <select
@@ -289,9 +291,9 @@ export default function NewShipmentPage() {
                   disabled={saving || !itemId}
                 />
               </div>
-            </div>
+            </div> */}
 
-            <div className="form-group">
+            {/* <div className="form-group">
               <label>Requested Attributes (JSON, optional)</label>
               <textarea
                 rows={4}
@@ -299,7 +301,7 @@ export default function NewShipmentPage() {
                 onChange={(e) => setRequestedAttributesText(e.target.value)}
                 disabled={saving || !itemId}
               />
-            </div>
+            </div> */}
 
             {prefillLotId && (
               <div className="form-help">

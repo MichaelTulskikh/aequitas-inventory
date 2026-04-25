@@ -11,6 +11,7 @@ type NavItem = {
 };
 
 type NavGroup = {
+  id: string;
   title: string;
   items: NavItem[];
 };
@@ -39,11 +40,12 @@ function normalizeGroups(value: unknown): string[] {
 
 function getPageTitle(pathname: string): string {
   if (pathname === "/") return "Dashboard";
+
+  // if (pathname.startsWith("/inventory/receive")) return "Receive Inventory";
   if (pathname.startsWith("/inventory")) return "Inventory";
   if (pathname.startsWith("/shipments")) return "Shipments";
   if (pathname.startsWith("/profile")) return "My Profile";
 
-  if (pathname.startsWith("/receiving")) return "Receive Inventory";
   if (pathname.startsWith("/admin/items")) return "Item Catalog";
   if (pathname.startsWith("/admin/categories")) return "Categories & Tags";
   if (pathname.startsWith("/admin/locations")) return "Locations";
@@ -55,7 +57,9 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/admin/inventory-valuation"))
     return "Inventory Valuation";
   if (pathname.startsWith("/admin/cognito-users")) return "Cognito Users";
-
+  if (pathname.startsWith("/admin/declarations")) return "Declarations";
+  if (pathname.startsWith("/admin/donors")) return "Donors";
+  if (pathname.startsWith("/admin/allocation")) return "Shipment Allocation";
   if (pathname.startsWith("/admin/docs")) return "API Docs";
 
   return "Warehouse Management";
@@ -103,6 +107,7 @@ export default function AppLayout() {
 
   const operationsNav = useMemo<NavGroup>(
     () => ({
+      id: "operations",
       title: "Operations",
       items: [
         { label: "Dashboard", to: "/", exact: true },
@@ -114,28 +119,95 @@ export default function AppLayout() {
     [],
   );
 
-  const adminNav = useMemo<NavGroup>(
+  const warehouseAdminNav = useMemo<NavGroup>(
     () => ({
-      title: "Administration",
+      id: "warehouse-admin",
+      title: "Warehouse Administration",
       items: [
-        { label: "Receive Inventory", to: "/receiving" },
-        { label: "Item Catalog", to: "/admin/items" },
-        { label: "Categories & Tags", to: "/admin/categories" },
-        { label: "Locations", to: "/admin/locations" },
-        { label: "Requester Profiles", to: "/admin/requesters" },
-        { label: "Inventory Audit", to: "/admin/inventory-audit" },
-        { label: "System Settings", to: "/admin/settings" },
+        // { label: "Receive Inventory", to: "/inventory/receive" },
         { label: "Inbound Shipments", to: "/admin/inbound-shipments" },
+        { label: "Shipment Allocation", to: "/admin/allocation" },
+        { label: "Locations", to: "/admin/locations" },
+        { label: "Inventory Audit", to: "/admin/inventory-audit" },
         { label: "Inventory Valuation", to: "/admin/inventory-valuation" },
-        { label: "Cognito Users", to: "/admin/cognito-users" },
-
-        { label: "API Documentation", to: "/admin/docs" },
       ],
     }),
     [],
   );
 
+  const catalogNav = useMemo<NavGroup>(
+    () => ({
+      id: "catalog",
+      title: "Catalog & Requests",
+      items: [
+        { label: "Item Catalog", to: "/admin/items" },
+        { label: "Categories & Tags", to: "/admin/categories" },
+        { label: "Requester Profiles", to: "/admin/requesters" },
+        { label: "Declarations", to: "/admin/declarations" },
+        { label: "Donors", to: "/admin/donors" },
+      ],
+    }),
+    [],
+  );
+
+  const systemNav = useMemo<NavGroup>(
+    () => ({
+      id: "system",
+      title: "System",
+      items: [
+        { label: "Cognito Users", to: "/admin/cognito-users" },
+        { label: "System Settings", to: "/admin/settings" },
+      ],
+    }),
+    [],
+  );
+
+  const developerNav = useMemo<NavGroup>(
+    () => ({
+      id: "developer",
+      title: "Developer",
+      items: [{ label: "API Documentation", to: "/admin/docs" }],
+    }),
+    [],
+  );
+
+  const allNavGroups = useMemo(
+    () =>
+      isPrivileged
+        ? [
+            operationsNav,
+            warehouseAdminNav,
+            catalogNav,
+            systemNav,
+            developerNav,
+          ]
+        : [operationsNav],
+    [
+      isPrivileged,
+      operationsNav,
+      warehouseAdminNav,
+      catalogNav,
+      systemNav,
+      developerNav,
+    ],
+  );
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    operations: true,
+    "warehouse-admin": true,
+    catalog: false,
+    system: false,
+    developer: false,
+  });
+
   const closeSidebar = () => setSidebarOpen(false);
+
+  const toggleGroup = (groupId: string) => {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupId]: !prev[groupId],
+    }));
+  };
 
   const [, forceRender] = useState(0);
 
@@ -173,30 +245,63 @@ export default function AppLayout() {
     };
   }, [sidebarOpen]);
 
-  const renderNavGroup = (group: NavGroup) => (
-    <div className={styles.nav} key={group.title}>
-      <div className={styles.navTitle}>{group.title}</div>
+  useEffect(() => {
+    const activeGroup = allNavGroups.find((group) =>
+      group.items.some((item) =>
+        isPathActive(location.pathname, item.to, item.exact),
+      ),
+    );
 
-      {group.items.map((item) => (
-        <Link
-          key={item.to}
-          className={
-            isPathActive(location.pathname, item.to, item.exact)
-              ? `${styles.navLink} ${styles.navLinkActive}`
-              : styles.navLink
-          }
-          to={item.to}
-          onClick={closeSidebar}
+    if (!activeGroup) return;
+
+    setOpenGroups((prev) => ({
+      ...prev,
+      [activeGroup.id]: true,
+    }));
+  }, [location.pathname, allNavGroups]);
+
+  const renderNavGroup = (group: NavGroup) => {
+    const isOpen = openGroups[group.id] ?? false;
+
+    return (
+      <div className={styles.navGroup} key={group.id}>
+        <button
+          type="button"
+          className={styles.navGroupButton}
+          onClick={() => toggleGroup(group.id)}
+          aria-expanded={isOpen}
+          aria-controls={`nav-group-${group.id}`}
         >
-          {item.label}
-        </Link>
-      ))}
-    </div>
-  );
+          <span className={styles.navTitle}>{group.title}</span>
+          <span className={styles.navChevron} aria-hidden="true">
+            {isOpen ? "▾" : "▸"}
+          </span>
+        </button>
+
+        {isOpen && (
+          <div id={`nav-group-${group.id}`} className={styles.navGroupItems}>
+            {group.items.map((item) => (
+              <Link
+                key={item.to}
+                className={
+                  isPathActive(location.pathname, item.to, item.exact)
+                    ? `${styles.navLink} ${styles.navLinkActive}`
+                    : styles.navLink
+                }
+                to={item.to}
+                onClick={closeSidebar}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.layout}>
-      
       <aside
         ref={sidebarRef}
         className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
@@ -204,8 +309,7 @@ export default function AppLayout() {
         <div className={styles.brand}>Aequitas Warehouse</div>
 
         <nav className={styles.nav}>
-          {renderNavGroup(operationsNav)}
-          {isPrivileged && renderNavGroup(adminNav)}
+          {allNavGroups.map((group) => renderNavGroup(group))}
         </nav>
       </aside>
 
