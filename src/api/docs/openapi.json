@@ -1,0 +1,460 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Warehouse API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "DashboardMe": {
+        "type": "object",
+        "properties": {
+          "is_privileged": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "is_privileged"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardSummary": {
+        "type": "object",
+        "properties": {
+          "shipments_by_status": {
+            "$ref": "#/components/schemas/DashboardShipmentsByStatus"
+          },
+          "my_active_shipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardActiveShipment"
+            }
+          },
+          "recent_fulfilled_shipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardRecentFulfilledShipment"
+            }
+          },
+          "inventory_by_category": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardInventoryByCategory"
+            }
+          },
+          "low_stock_lots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardLowStockLot"
+            }
+          },
+          "expiring_soon_lots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardExpiringSoonLot"
+            }
+          },
+          "recent_receives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardInventoryTxn"
+            }
+          },
+          "recent_adjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardInventoryTxn"
+            }
+          }
+        },
+        "required": [
+          "shipments_by_status",
+          "my_active_shipments",
+          "recent_fulfilled_shipments",
+          "inventory_by_category",
+          "low_stock_lots",
+          "expiring_soon_lots",
+          "recent_receives",
+          "recent_adjustments"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardShipmentsByStatus": {
+        "type": "object",
+        "properties": {
+          "draft": {
+            "type": "number"
+          },
+          "submitted": {
+            "type": "number"
+          },
+          "approved": {
+            "type": "number"
+          },
+          "fulfilled": {
+            "type": "number"
+          },
+          "cancelled": {
+            "type": "number"
+          },
+          "rejected": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "draft",
+          "submitted",
+          "approved",
+          "fulfilled",
+          "cancelled",
+          "rejected"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardActiveShipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "shipment_number": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "requester_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "line_count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "shipment_number",
+          "status",
+          "requester_name",
+          "created_at",
+          "line_count"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardRecentFulfilledShipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "shipment_number": {
+            "type": "string"
+          },
+          "requester_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fulfilled_at": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "shipment_number",
+          "requester_name",
+          "fulfilled_at"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardInventoryByCategory": {
+        "type": "object",
+        "properties": {
+          "category_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "category_name": {
+            "type": "string"
+          },
+          "total_available_quantity": {
+            "type": "number"
+          },
+          "item_count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "category_id",
+          "category_name",
+          "total_available_quantity",
+          "item_count"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardLowStockLot": {
+        "type": "object",
+        "properties": {
+          "inventory_lot_id": {
+            "type": "string"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "location_name": {
+            "type": "string"
+          },
+          "available_quantity": {
+            "type": "number"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          }
+        },
+        "required": [
+          "inventory_lot_id",
+          "item_id",
+          "item_name",
+          "location_name",
+          "available_quantity",
+          "attributes"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardExpiringSoonLot": {
+        "type": "object",
+        "properties": {
+          "inventory_lot_id": {
+            "type": "string"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "location_name": {
+            "type": "string"
+          },
+          "available_quantity": {
+            "type": "number"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "expiration_date": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "inventory_lot_id",
+          "item_id",
+          "item_name",
+          "location_name",
+          "available_quantity",
+          "attributes",
+          "expiration_date"
+        ],
+        "additionalProperties": false
+      },
+      "DashboardInventoryTxn": {
+        "type": "object",
+        "properties": {
+          "inventory_txn_id": {
+            "type": "string"
+          },
+          "occurred_at": {
+            "type": "string"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "location_name": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "inventory_txn_id",
+          "occurred_at",
+          "item_name",
+          "quantity",
+          "location_name",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "GetDashboardSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "me": {
+            "$ref": "#/components/schemas/DashboardMe"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DashboardSummary"
+          }
+        },
+        "required": [
+          "me",
+          "summary"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/api/v2/dashboard": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "getDashboardSummary",
+        "summary": "Get dashboard summary",
+        "description": "Returns dashboard counts and recent warehouse activity.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDashboardSummaryResponse"
+                },
+                "example": {
+                  "me": {
+                    "is_privileged": true
+                  },
+                  "summary": {
+                    "shipments_by_status": {
+                      "draft": 1,
+                      "submitted": 2,
+                      "approved": 1,
+                      "fulfilled": 5,
+                      "cancelled": 0,
+                      "rejected": 0
+                    },
+                    "my_active_shipments": [
+                      {
+                        "id": "b27035cd-b7a2-4216-add5-18d3a5107c54",
+                        "shipment_number": "SHP-B27035CDB7A2",
+                        "status": "approved",
+                        "requester_name": "Michael Tulskikh",
+                        "created_at": "2026-04-12T14:57:03.000Z",
+                        "line_count": 2
+                      }
+                    ],
+                    "recent_fulfilled_shipments": [
+                      {
+                        "id": "fd21225d-2327-4c16-90ed-aa9757ab0904",
+                        "shipment_number": "SHP-20260402-213402",
+                        "requester_name": "108 TDF",
+                        "fulfilled_at": "2026-04-02T22:46:25.785Z"
+                      }
+                    ],
+                    "inventory_by_category": [
+                      {
+                        "category_id": "51966f73-90b9-4b52-ae84-19e37ef50fba",
+                        "category_name": "Rescue/Emergency Gear",
+                        "total_available_quantity": 924,
+                        "item_count": 3
+                      },
+                      {
+                        "category_id": "77223dac-9955-4b0b-acbe-e789782b226a",
+                        "category_name": "Medical",
+                        "total_available_quantity": 366,
+                        "item_count": 7
+                      }
+                    ],
+                    "low_stock_lots": [
+                      {
+                        "inventory_lot_id": "784af51d-4d54-4086-83d8-afc57acf4a03",
+                        "item_id": "acdf2cf1-d315-4a34-be5c-502517a05d5f",
+                        "item_name": "Book",
+                        "location_name": "Pallet 4",
+                        "available_quantity": 1,
+                        "attributes": {
+                          "type": "adult",
+                          "language": "english"
+                        }
+                      }
+                    ],
+                    "expiring_soon_lots": [
+                      {
+                        "inventory_lot_id": "1260d9c0-ffc7-46d9-9522-3a8802ba25e0",
+                        "item_id": "4d505cb2-6935-4f50-b4d8-38682608063e",
+                        "item_name": "Surgical Gloves",
+                        "location_name": "Main Warehouse",
+                        "available_quantity": 12,
+                        "attributes": {
+                          "expiration_date": "2026-06-15"
+                        },
+                        "expiration_date": "2026-06-15"
+                      }
+                    ],
+                    "recent_receives": [
+                      {
+                        "inventory_txn_id": "dcc34bd4-bff7-4c11-b73b-c5eb434c6c8a",
+                        "occurred_at": "2026-04-30T12:00:00.000Z",
+                        "item_name": "Bandages",
+                        "quantity": 50,
+                        "location_name": "Main Warehouse",
+                        "reason": "Inbound shipment received"
+                      }
+                    ],
+                    "recent_adjustments": [
+                      {
+                        "inventory_txn_id": "549fcbd5-96bc-4675-a085-605860ca2306",
+                        "occurred_at": "2026-04-30T13:00:00.000Z",
+                        "item_name": "Gloves",
+                        "quantity": -2,
+                        "location_name": "Main Warehouse",
+                        "reason": "Manual correction"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        }
+      }
+    }
+  }
+}
