@@ -327,7 +327,7 @@ export default function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading profile…</span>
@@ -337,7 +337,7 @@ export default function MyProfilePage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>My Profile</h1>
@@ -483,9 +483,7 @@ export default function MyProfilePage() {
                     }`}
                   />
                 </div>
-                <div className={styles.fieldHint}>
-                  EDRPOU / ЄДРПОУ
-                </div>
+                <div className={styles.fieldHint}>EDRPOU / ЄДРПОУ</div>
                 {touched.edrpou && fieldErrors.edrpou && (
                   <div className={styles.fieldError}>{fieldErrors.edrpou}</div>
                 )}

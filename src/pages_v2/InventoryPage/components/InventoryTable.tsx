@@ -36,7 +36,7 @@ export default function InventoryTable({
   renderTags,
 }: InventoryTableProps) {
   return (
-    <div className={styles.tableWrapper}>
+    <div className={styles.tablepage__wrapper}>
       {loading && (
         <div className={styles.loading}>
           <div className={styles.spinner} />
@@ -44,7 +44,9 @@ export default function InventoryTable({
         </div>
       )}
 
-      <table className={`${styles.table} ${loading ? styles.tableBlurred : ""}`}>
+      <table
+        className={`${styles.table} ${loading ? styles.tableBlurred : ""}`}
+      >
         <thead>
           <tr>
             <th />

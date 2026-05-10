@@ -161,13 +161,18 @@ export default function CategoriesAndTagsPage() {
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [showTagForm, setShowTagForm] = useState(false);
 
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null,
+  );
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
 
-  const [categoryForm, setCategoryForm] = useState<CategoryForm>(emptyCategoryForm());
+  const [categoryForm, setCategoryForm] =
+    useState<CategoryForm>(emptyCategoryForm());
   const [tagForm, setTagForm] = useState<TagForm>(emptyTagForm());
 
-  const [expandedCategoryIds, setExpandedCategoryIds] = useState<Record<string, boolean>>({});
+  const [expandedCategoryIds, setExpandedCategoryIds] = useState<
+    Record<string, boolean>
+  >({});
 
   async function load() {
     try {
@@ -210,8 +215,14 @@ export default function CategoriesAndTagsPage() {
     load();
   }, []);
 
-  const categoryTree = useMemo(() => buildCategoryTree(categories), [categories]);
-  const flatCategories = useMemo(() => flattenTree(categoryTree), [categoryTree]);
+  const categoryTree = useMemo(
+    () => buildCategoryTree(categories),
+    [categories],
+  );
+  const flatCategories = useMemo(
+    () => flattenTree(categoryTree),
+    [categoryTree],
+  );
 
   const categoryOptions = useMemo(() => {
     return flatCategories.filter((cat) => {
@@ -449,7 +460,7 @@ export default function CategoriesAndTagsPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Categories & Tags</h1>
@@ -503,7 +514,10 @@ export default function CategoriesAndTagsPage() {
                   <input
                     value={categoryForm.name}
                     onChange={(e) =>
-                      setCategoryForm((prev) => ({ ...prev, name: e.target.value }))
+                      setCategoryForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
                     }
                     disabled={savingCategory}
                   />
@@ -514,7 +528,10 @@ export default function CategoriesAndTagsPage() {
                   <input
                     value={categoryForm.code}
                     onChange={(e) =>
-                      setCategoryForm((prev) => ({ ...prev, code: e.target.value }))
+                      setCategoryForm((prev) => ({
+                        ...prev,
+                        code: e.target.value,
+                      }))
                     }
                     disabled={savingCategory}
                   />

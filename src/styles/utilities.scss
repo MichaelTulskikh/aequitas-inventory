@@ -1,33 +1,120 @@
-.page-shell {
-  padding: var(--page-pad);
-  min-height: 100%;
+// ***
+// #scss-future:
+
+// basic page layout
+.page {
+  &__wrapper {
+    padding: var(--page-pad);
+    min-height: 100%;
+  }
+  &__heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+  &__description {
+    color: var(--text-muted);
+  }
 }
 
+.table-section {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-main);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  &--empty {
+    padding: 18px 14px;
+    color: var(--text-muted);
+  }
+  &--error {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid #d9b4b4;
+    background: #fbf1f1;
+    color: var(--danger);
+    border-radius: var(--radius-sm);
+  }
+  &__wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--line-main);
+    & h2 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-strong);
+    }
+  }
+  &__card {
+    background: #fff;
+    padding: 10px;
+    padding: 0;
+    flex-grow: 1;
+  }
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    thead th {
+      background: var(--bg-table-head);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    tbody tr:hover {
+      background: var(--bg-hover);
+    }
+  }
+}
+
+// #scss-old
 .panel,
 .shipment-panel,
 .settings-panel,
-.inventory-table-wrapper,
-.item-catalog-table-wrapper,
-.shipments-table-wrapper,
-.audit-table-wrapper,
-.locations-table-wrapper,
-.meta-table-wrapper,
-.dashboard-section {
+.inventory-table-page__wrapper,
+.item-catalog-table-page__wrapper,
+.shipments-table-page__wrapper,
+.audit-table-page__wrapper,
+.locations-table-page__wrapper,
+.meta-table-page__wrapper {
   background: var(--bg-panel);
   border: 1px solid var(--line-main);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-1);
 }
 
+// ***
+
 .shipment-panel,
-.settings-panel,
-.dashboard-section {
+.settings-panel {
   overflow: hidden;
 }
 
 .panel-header,
 .shipment-panel-header,
-.dashboard-section-header,
 .panel-toolbar {
   display: flex;
   align-items: center;
@@ -42,8 +129,6 @@
 .panel-header h3,
 .shipment-panel-header h2,
 .shipment-panel-header h3,
-.dashboard-section-header h2,
-.dashboard-section > h2,
 .panel-toolbar h2 {
   font-size: 14px;
   font-weight: 700;
@@ -52,13 +137,6 @@
   color: var(--text-strong);
 }
 
-.dashboard-section > h2 {
-  padding: 12px 14px;
-  background: var(--bg-header);
-  border-bottom: 1px solid var(--line-main);
-}
-
-.dashboard-error,
 .inventory-error,
 .form-error,
 .alert-error {
@@ -82,7 +160,6 @@
   border-radius: var(--radius-sm);
 }
 
-.dashboard-loading,
 .table-loading,
 .loading-inline {
   display: inline-flex;
@@ -127,17 +204,12 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.dashboard-card,
 .shipment-summary-card,
 .summary-stat {
   background: #fff;
   border: 1px solid var(--line-main);
   border-radius: var(--radius-sm);
   padding: 10px;
-}
-
-.dashboard-card {
-  padding: 0;
 }
 
 .stat-label,
@@ -166,19 +238,6 @@
   margin-bottom: 16px;
 }
 
-.dashboard-card > .dashboard-empty,
-.shipment-panel > .dashboard-empty {
-  padding: 18px 14px;
-  color: var(--text-muted);
-}
-
-.dashboard-empty,
-.inventory-empty-state {
-  padding: 18px 14px;
-  color: var(--text-muted);
-}
-
-.dashboard-table,
 .inventory-table,
 .shipments-table,
 .audit-table,
@@ -188,8 +247,6 @@
   font-size: 13px;
 }
 
-.dashboard-table th,
-.dashboard-table td,
 .inventory-table th,
 .inventory-table td,
 .shipments-table th,
@@ -204,7 +261,6 @@
   text-align: left;
 }
 
-.dashboard-table thead th,
 .inventory-table thead th,
 .shipments-table thead th,
 .audit-table thead th,
@@ -216,7 +272,6 @@
   color: var(--text-muted);
 }
 
-.dashboard-table tbody tr:hover,
 .inventory-table tbody tr:hover,
 .shipments-table tbody tr:hover,
 .audit-table tbody tr:hover,

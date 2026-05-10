@@ -477,7 +477,9 @@ export default function LocationsPage() {
             <div className={styles.treeTitleRow}>
               <div className={styles.treeName}>{node.name}</div>
 
-              <span className={`${styles.typeChip} ${styles[`type_${node.type}`]}`}>
+              <span
+                className={`${styles.typeChip} ${styles[`type_${node.type}`]}`}
+              >
                 {node.type}
               </span>
 
@@ -606,7 +608,7 @@ export default function LocationsPage() {
   ]);
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Locations</h1>
@@ -770,7 +772,7 @@ export default function LocationsPage() {
             <span>Loading locations…</span>
           </div>
         ) : locations.length === 0 ? (
-          <div className="dashboard-empty">No locations found.</div>
+          <div className="table-section--empty">No locations found.</div>
         ) : (
           <div className={styles.tree}>
             {locationTree.map((node) => renderNode(node))}

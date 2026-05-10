@@ -19,7 +19,7 @@ import {
   fetchInventoryCatalog,
   fetchInventoryItems,
 } from "../../api/inventory";
-import styles from "./ShipmentDetailsPage.module.css"
+import styles from "./ShipmentDetailsPage.module.css";
 
 type InventoryItemOption = {
   id: string;
@@ -372,7 +372,7 @@ function AllocationPanel({
               <button className="app-button" onClick={handleReserve}>
                 Reserve
               </button>
-            </div>  
+            </div>
 
             <div className={styles.lotPreview}>
               {lots.map((lot) => (
@@ -575,7 +575,7 @@ export default function ShipmentDetailPage() {
 
   if (loading && !shipment) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading shipment…</span>
@@ -586,7 +586,7 @@ export default function ShipmentDetailPage() {
 
   if (error && !shipment) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="alert-error">Error: {error}</div>
       </div>
     );
@@ -595,7 +595,7 @@ export default function ShipmentDetailPage() {
   if (!shipment) return null;
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -741,7 +741,7 @@ export default function ShipmentDetailPage() {
         )}
 
         {shipment.lines.length === 0 ? (
-          <div className="dashboard-empty">No shipment lines yet.</div>
+          <div className="table-section--empty">No shipment lines yet.</div>
         ) : (
           <div className={styles.linesStack}>
             {shipment.lines.map((line) => {
@@ -751,9 +751,7 @@ export default function ShipmentDetailPage() {
                 <div key={line.id} className={styles.lineCard}>
                   <div className={styles.lineHead}>
                     <div>
-                      <div className={styles.lineTitle}>
-                        {line.item_name}
-                      </div>
+                      <div className={styles.lineTitle}>{line.item_name}</div>
                       <div className={styles.lineSubtitle}>
                         Requested: {line.requested_quantity} {line.default_unit}
                         {" · "}

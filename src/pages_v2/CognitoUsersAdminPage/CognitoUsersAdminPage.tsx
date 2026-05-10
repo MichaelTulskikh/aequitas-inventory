@@ -232,7 +232,7 @@ export default function CognitoUsersAdminPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Cognito User Administration</h1>
@@ -589,7 +589,7 @@ export default function CognitoUsersAdminPage() {
         ) : users.length === 0 ? (
           <div className={styles.empty}>No users found.</div>
         ) : (
-          <div className={styles.tableWrapper}>
+          <div className={styles.tablepage__wrapper}>
             <table className="meta-table">
               <thead>
                 <tr>

@@ -988,7 +988,7 @@ export default function InboundShipmentsPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading inbound shipments…</span>
@@ -998,7 +998,7 @@ export default function InboundShipmentsPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -1197,7 +1197,9 @@ export default function InboundShipmentsPage() {
           </div>
 
           {filteredShipments.length === 0 ? (
-            <div className="dashboard-empty">No inbound shipments found.</div>
+            <div className="table-section--empty">
+              No inbound shipments found.
+            </div>
           ) : (
             <div className={styles.tableWrap}>
               <table className="shipments-table">
@@ -1296,7 +1298,7 @@ export default function InboundShipmentsPage() {
           </div>
 
           {!selectedShipment ? (
-            <div className="dashboard-empty">
+            <div className="table-section--empty">
               Select a shipment to view or manage its lines.
             </div>
           ) : (
@@ -1574,7 +1576,7 @@ export default function InboundShipmentsPage() {
 
                 <div className={styles.lineTablePanel}>
                   {lines.length === 0 ? (
-                    <div className="dashboard-empty">
+                    <div className="table-section--empty">
                       This shipment has no lines yet. Add the first discovered
                       item using the form on the left.
                     </div>

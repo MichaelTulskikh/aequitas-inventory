@@ -75,8 +75,12 @@ export default function RequesterProfilesAdminPage() {
       });
 
       setProfiles(res.profiles);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load requester profiles");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load requester profiles");
+      }
     } finally {
       setLoading(false);
     }
@@ -101,8 +105,12 @@ export default function RequesterProfilesAdminPage() {
       setEditingProfileId(profileId);
       setEditingProfile(res.profile);
       setForm(buildForm(res.profile));
-    } catch (err: any) {
-      setError(err?.message || "Failed to load requester profile");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load requester profile");
+      }
     }
   }
 
@@ -132,15 +140,19 @@ export default function RequesterProfilesAdminPage() {
 
       closeEdit();
       await load();
-    } catch (err: any) {
-      setError(err?.message || "Failed to save requester profile");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to save requester profile");
+      }
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Requester Profiles</h1>
@@ -154,15 +166,15 @@ export default function RequesterProfilesAdminPage() {
       {error && <div className="alert-error">Error: {error}</div>}
 
       <div className="dashboard-card-grid three">
-        <div className="dashboard-card stat-card">
+        <div className="table-section__card">
           <div className="stat-label">Profiles</div>
           <div className="stat-value">{totals.total}</div>
         </div>
-        <div className="dashboard-card stat-card">
+        <div className="table-section__card">
           <div className="stat-label">Complete</div>
           <div className="stat-value">{totals.complete}</div>
         </div>
-        <div className="dashboard-card stat-card">
+        <div className="table-section__card">
           <div className="stat-label">Incomplete</div>
           <div className="stat-value">{totals.incomplete}</div>
         </div>
@@ -334,7 +346,9 @@ export default function RequesterProfilesAdminPage() {
             <span>Loading requester profiles…</span>
           </div>
         ) : profiles.length === 0 ? (
-          <div className="dashboard-empty">No requester profiles found.</div>
+          <div className="table-section--empty">
+            No requester profiles found.
+          </div>
         ) : (
           <table className="meta-table">
             <thead>

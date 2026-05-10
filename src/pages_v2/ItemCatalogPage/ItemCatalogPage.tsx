@@ -140,7 +140,7 @@ export default function ItemCatalogPage() {
       setEditingItemId(itemId);
       setForm(buildFormFromItem(res.item));
       setShowCreate(true);
-      window.scrollTo({top: 0, behavior: "smooth"})
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err: any) {
       setError(err?.message || "Failed to load item");
     }
@@ -266,7 +266,7 @@ export default function ItemCatalogPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Item Catalog</h1>
@@ -429,7 +429,9 @@ export default function ItemCatalogPage() {
               </div>
 
               {form.attribute_definitions.length === 0 ? (
-                <div className="dashboard-empty">No attributes defined.</div>
+                <div className="table-section--empty">
+                  No attributes defined.
+                </div>
               ) : (
                 <div className={styles.attributeStack}>
                   {form.attribute_definitions.map((attr, index) => (
@@ -593,7 +595,7 @@ export default function ItemCatalogPage() {
             <span>Loading items…</span>
           </div>
         ) : items.length === 0 ? (
-          <div className="dashboard-empty">No items found.</div>
+          <div className="table-section--empty">No items found.</div>
         ) : (
           <table className="meta-table">
             <thead>

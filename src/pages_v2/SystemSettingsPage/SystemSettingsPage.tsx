@@ -88,7 +88,7 @@ export default function SystemSettingsPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading system settings…</span>
@@ -98,7 +98,7 @@ export default function SystemSettingsPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>System Settings</h1>

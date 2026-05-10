@@ -89,7 +89,7 @@ export default function InventoryAuditPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Inventory Audit</h1>
         <p className={styles.subtitle}>
@@ -196,7 +196,7 @@ export default function InventoryAuditPage() {
             <span>Loading inventory audit…</span>
           </div>
         ) : rows.length === 0 ? (
-          <div className="dashboard-empty">No audit rows found.</div>
+          <div className="table-section--empty">No audit rows found.</div>
         ) : (
           <div className={styles.tableWrap}>
             <table className="meta-table">
@@ -249,9 +249,7 @@ export default function InventoryAuditPage() {
                     <td>
                       <div className={styles.rowMeta}>
                         <div>{row.actor_name || "—"}</div>
-                        <div className="muted">
-                          {row.actor_email || "—"}
-                        </div>
+                        <div className="muted">{row.actor_email || "—"}</div>
                       </div>
                     </td>
                     <td>{row.reason || "—"}</td>

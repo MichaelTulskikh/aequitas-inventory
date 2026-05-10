@@ -61,7 +61,12 @@ export default function NewShipmentPage() {
   const [requestedQuantity, setRequestedQuantity] = useState("");
   const [requestedAttributesText, setRequestedAttributesText] = useState("{}");
 
-  console.log(items, setItemId, setRequestedAttributesText, setRequestedQuantity) // REMOVE - TEMPORARY FIX 
+  console.log(
+    items,
+    setItemId,
+    setRequestedAttributesText,
+    setRequestedQuantity,
+  ); // REMOVE - TEMPORARY FIX
 
   const complete = useMemo(() => isProfileComplete(profile), [profile]);
 
@@ -154,7 +159,7 @@ export default function NewShipmentPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading new shipment form…</span>
@@ -164,7 +169,7 @@ export default function NewShipmentPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -186,7 +191,7 @@ export default function NewShipmentPage() {
           </div>
 
           {!profile ? (
-            <div className="dashboard-empty">
+            <div className="table-section--empty">
               No requester profile found for your account.
             </div>
           ) : (

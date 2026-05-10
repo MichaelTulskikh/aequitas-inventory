@@ -157,7 +157,7 @@ function renderInput(
   }
 }
 
-console.log(renderInput, normalizeAttributeValue) // TODO - REMOVE TEMPORARY FIX 3am i want sleep
+console.log(renderInput, normalizeAttributeValue); // TODO - REMOVE TEMPORARY FIX 3am i want sleep
 
 export default function ReceiveInventoryPage() {
   const [searchParams] = useSearchParams();
@@ -481,7 +481,7 @@ export default function ReceiveInventoryPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading receive inventory form…</span>
@@ -491,7 +491,7 @@ export default function ReceiveInventoryPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -695,7 +695,7 @@ export default function ReceiveInventoryPage() {
           </div>
 
           {attributeDefs.length === 0 ? (
-            <div className="dashboard-empty">
+            <div className="table-section--empty">
               No item-specific attributes for this item.
             </div>
           ) : (
@@ -729,7 +729,7 @@ export default function ReceiveInventoryPage() {
 
           {!selectedLine?.attributes ||
           Object.keys(selectedLine.attributes).length === 0 ? (
-            <div className="dashboard-empty">
+            <div className="table-section--empty">
               No attributes on this inbound line.
             </div>
           ) : (

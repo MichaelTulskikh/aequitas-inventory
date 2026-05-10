@@ -218,7 +218,9 @@ async function fetchInventoryCatalog(params?: {
   if (params?.page_size) search.set("page_size", String(params.page_size));
 
   const suffix = search.toString() ? `?${search.toString()}` : "";
-  return apiFetch(`/v2/inventory/catalog${suffix}`) as Promise<InventoryCatalogResponse>;
+  return apiFetch(
+    `/v2/inventory/catalog${suffix}`,
+  ) as Promise<InventoryCatalogResponse>;
 }
 
 // async function fetchShipmentLineAllocations(shipmentLineId: string) {
@@ -328,17 +330,24 @@ function AllocationModal({
 
   const candidateLots = useMemo(() => {
     if (!matchingItem) return [];
-    return (matchingItem.lots || []).filter((lot) => Number(lot.available_quantity) > 0);
+    return (matchingItem.lots || []).filter(
+      (lot) => Number(lot.available_quantity) > 0,
+    );
   }, [matchingItem]);
 
   const selectedLot = useMemo(() => {
-    return candidateLots.find((lot) => lot.inventory_lot_id === selectedLotId) || null;
+    return (
+      candidateLots.find((lot) => lot.inventory_lot_id === selectedLotId) ||
+      null
+    );
   }, [candidateLots, selectedLotId]);
 
   if (!open || !line) return null;
 
   const maxRemaining = Number(line.remaining_quantity || 0);
-  const canAllocate = shipmentStatus ? statusCanAllocate(shipmentStatus) : false;
+  const canAllocate = shipmentStatus
+    ? statusCanAllocate(shipmentStatus)
+    : false;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -350,8 +359,8 @@ function AllocationModal({
     }
 
     if (!line) {
-        setError("No line selected.");
-        return;
+      setError("No line selected.");
+      return;
     }
 
     const qty = Number(quantity);
@@ -367,7 +376,9 @@ function AllocationModal({
     }
 
     if (qty > maxRemaining) {
-      setError(`Quantity cannot exceed remaining request quantity (${maxRemaining}).`);
+      setError(
+        `Quantity cannot exceed remaining request quantity (${maxRemaining}).`,
+      );
       return;
     }
 
@@ -401,7 +412,8 @@ function AllocationModal({
           <div>
             <h3 className={styles.modalTitle}>Allocate Shipment Line</h3>
             <div className={styles.modalSubtitle}>
-              {line.item_name} • Remaining {line.remaining_quantity} {line.default_unit}
+              {line.item_name} • Remaining {line.remaining_quantity}{" "}
+              {line.default_unit}
             </div>
           </div>
 
@@ -414,13 +426,16 @@ function AllocationModal({
 
         <div className={styles.modalSummary}>
           <div>
-            <strong>Requested Quantity:</strong> {line.requested_quantity} {line.default_unit}
+            <strong>Requested Quantity:</strong> {line.requested_quantity}{" "}
+            {line.default_unit}
           </div>
           <div>
-            <strong>Allocated Quantity:</strong> {line.allocated_quantity} {line.default_unit}
+            <strong>Allocated Quantity:</strong> {line.allocated_quantity}{" "}
+            {line.default_unit}
           </div>
           <div>
-            <strong>Remaining Quantity:</strong> {line.remaining_quantity} {line.default_unit}
+            <strong>Remaining Quantity:</strong> {line.remaining_quantity}{" "}
+            {line.default_unit}
           </div>
           <div>
             <strong>Requested Attributes:</strong>{" "}
@@ -443,9 +458,12 @@ function AllocationModal({
               >
                 <option value="">Select lot</option>
                 {candidateLots.map((lot) => (
-                  <option key={lot.inventory_lot_id} value={lot.inventory_lot_id}>
-                    {formatPath(lot.location_path)} • available {lot.available_quantity} • tier{" "}
-                    {lot.visibility_tier}
+                  <option
+                    key={lot.inventory_lot_id}
+                    value={lot.inventory_lot_id}
+                  >
+                    {formatPath(lot.location_path)} • available{" "}
+                    {lot.available_quantity} • tier {lot.visibility_tier}
                   </option>
                 ))}
               </select>
@@ -454,10 +472,12 @@ function AllocationModal({
             {selectedLot && (
               <div className={styles.modalSummary}>
                 <div>
-                  <strong>Location:</strong> {formatPath(selectedLot.location_path)}
+                  <strong>Location:</strong>{" "}
+                  {formatPath(selectedLot.location_path)}
                 </div>
                 <div>
-                  <strong>Lot Attributes:</strong> {prettyAttributes(selectedLot.attributes)}
+                  <strong>Lot Attributes:</strong>{" "}
+                  {prettyAttributes(selectedLot.attributes)}
                 </div>
                 <div>
                   <strong>Available:</strong> {selectedLot.available_quantity}{" "}
@@ -523,17 +543,28 @@ export default function ShipmentAllocationPage() {
   const [statusFilter, setStatusFilter] = useState("submitted");
 
   const [shipments, setShipments] = useState<ShipmentListItem[]>([]);
-  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
-  const [selectedShipment, setSelectedShipment] = useState<ShipmentDetail | null>(null);
+  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(
+    null,
+  );
+  const [selectedShipment, setSelectedShipment] =
+    useState<ShipmentDetail | null>(null);
 
-  const [inventoryItems, setInventoryItems] = useState<InventoryCatalogItem[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryCatalogItem[]>(
+    [],
+  );
 
   const [allocationModalOpen, setAllocationModalOpen] = useState(false);
-  const [allocationLine, setAllocationLine] = useState<ShipmentLine | null>(null);
+  const [allocationLine, setAllocationLine] = useState<ShipmentLine | null>(
+    null,
+  );
 
-  const [editingAllocationId, setEditingAllocationId] = useState<string | null>(null);
+  const [editingAllocationId, setEditingAllocationId] = useState<string | null>(
+    null,
+  );
   const [editingAllocationQty, setEditingAllocationQty] = useState("");
-  const [savingAllocationId, setSavingAllocationId] = useState<string | null>(null);
+  const [savingAllocationId, setSavingAllocationId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -709,7 +740,7 @@ export default function ShipmentAllocationPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -763,7 +794,7 @@ export default function ShipmentAllocationPage() {
               <span>Loading shipments…</span>
             </div>
           ) : shipments.length === 0 ? (
-            <div className="dashboard-empty">No shipments found.</div>
+            <div className="table-section--empty">No shipments found.</div>
           ) : (
             <div className={styles.shipmentList}>
               {shipments.map((shipment) => (
@@ -771,19 +802,24 @@ export default function ShipmentAllocationPage() {
                   key={shipment.id}
                   type="button"
                   className={`${styles.shipmentListItem} ${
-                    shipment.id === selectedShipmentId ? styles.shipmentListItemActive : ""
+                    shipment.id === selectedShipmentId
+                      ? styles.shipmentListItemActive
+                      : ""
                   }`}
                   onClick={() => setSelectedShipmentId(shipment.id)}
                 >
                   <div className={styles.shipmentListTop}>
                     <strong>{shipment.shipment_number}</strong>
-                    <span className={styles.shipmentStatus}>{shipment.status}</span>
+                    <span className={styles.shipmentStatus}>
+                      {shipment.status}
+                    </span>
                   </div>
                   <div className={styles.shipmentListMeta}>
                     {shipment.requester_profile.full_name || "—"}
                   </div>
                   <div className={styles.shipmentListMeta}>
-                    {shipment.line_count} lines • requested {shipment.total_requested_quantity}
+                    {shipment.line_count} lines • requested{" "}
+                    {shipment.total_requested_quantity}
                   </div>
                 </button>
               ))}
@@ -793,14 +829,14 @@ export default function ShipmentAllocationPage() {
 
         <section className={`panel ${styles.main}`}>
           {!selectedShipmentId ? (
-            <div className="dashboard-empty">Select a shipment.</div>
+            <div className="table-section--empty">Select a shipment.</div>
           ) : loadingShipmentDetail ? (
             <div className="dashboard-loading">
               <div className="spinner" />
               <span>Loading shipment detail…</span>
             </div>
           ) : !selectedShipment ? (
-            <div className="dashboard-empty">Shipment not found.</div>
+            <div className="table-section--empty">Shipment not found.</div>
           ) : (
             <>
               <div className={styles.shipmentHeader}>
@@ -811,7 +847,8 @@ export default function ShipmentAllocationPage() {
                   <div className={styles.shipmentMeta}>
                     <span>Status: {selectedShipment.status}</span>
                     <span>
-                      Requester: {selectedShipment.requester_profile.full_name || "—"}
+                      Requester:{" "}
+                      {selectedShipment.requester_profile.full_name || "—"}
                     </span>
                     <span>
                       Created: {formatDateTime(selectedShipment.created_at)}
@@ -827,26 +864,38 @@ export default function ShipmentAllocationPage() {
               <div className={styles.shipmentDetailsGrid}>
                 <div className={styles.infoCard}>
                   <strong>Requester</strong>
-                  <div>{selectedShipment.requester_profile.full_name || "—"}</div>
+                  <div>
+                    {selectedShipment.requester_profile.full_name || "—"}
+                  </div>
                   <div>{selectedShipment.requester_profile.email || "—"}</div>
                   <div>{selectedShipment.requester_profile.phone || "—"}</div>
                 </div>
 
                 <div className={styles.infoCard}>
                   <strong>Delivery Address</strong>
-                  <div>{selectedShipment.requester_profile.delivery_address || "—"}</div>
+                  <div>
+                    {selectedShipment.requester_profile.delivery_address || "—"}
+                  </div>
                 </div>
 
                 <div className={styles.infoCard}>
                   <strong>Status Timestamps</strong>
-                  <div>Submitted: {formatDateTime(selectedShipment.submitted_at)}</div>
-                  <div>Approved: {formatDateTime(selectedShipment.approved_at)}</div>
-                  <div>Fulfilled: {formatDateTime(selectedShipment.fulfilled_at)}</div>
+                  <div>
+                    Submitted: {formatDateTime(selectedShipment.submitted_at)}
+                  </div>
+                  <div>
+                    Approved: {formatDateTime(selectedShipment.approved_at)}
+                  </div>
+                  <div>
+                    Fulfilled: {formatDateTime(selectedShipment.fulfilled_at)}
+                  </div>
                 </div>
               </div>
 
               {selectedShipment.lines.length === 0 ? (
-                <div className="dashboard-empty">This shipment has no lines yet.</div>
+                <div className="table-section--empty">
+                  This shipment has no lines yet.
+                </div>
               ) : (
                 <div className={styles.linesSection}>
                   {selectedShipment.lines.map((line) => (
@@ -855,8 +904,10 @@ export default function ShipmentAllocationPage() {
                         <div>
                           <h3 className={styles.lineTitle}>{line.item_name}</h3>
                           <div className={styles.lineMeta}>
-                            Requested {line.requested_quantity} {line.default_unit} • Allocated{" "}
-                            {line.allocated_quantity} • Remaining {line.remaining_quantity}
+                            Requested {line.requested_quantity}{" "}
+                            {line.default_unit} • Allocated{" "}
+                            {line.allocated_quantity} • Remaining{" "}
+                            {line.remaining_quantity}
                           </div>
                         </div>
 
@@ -887,7 +938,9 @@ export default function ShipmentAllocationPage() {
                       </div>
 
                       {line.allocations.length === 0 ? (
-                        <div className="dashboard-empty">No allocations yet.</div>
+                        <div className="table-section--empty">
+                          No allocations yet.
+                        </div>
                       ) : (
                         <div className={styles.tableWrap}>
                           <table className="shipments-table">
@@ -903,7 +956,8 @@ export default function ShipmentAllocationPage() {
                             </thead>
                             <tbody>
                               {line.allocations.map((allocation) => {
-                                const isEditing = editingAllocationId === allocation.id;
+                                const isEditing =
+                                  editingAllocationId === allocation.id;
 
                                 return (
                                   <tr key={allocation.id}>
@@ -925,17 +979,27 @@ export default function ShipmentAllocationPage() {
                                             step="0.001"
                                             value={editingAllocationQty}
                                             onChange={(e) =>
-                                              setEditingAllocationQty(e.target.value)
+                                              setEditingAllocationQty(
+                                                e.target.value,
+                                              )
                                             }
-                                            disabled={savingAllocationId === allocation.id}
+                                            disabled={
+                                              savingAllocationId ===
+                                              allocation.id
+                                            }
                                           />
                                           <button
                                             type="button"
                                             className="app-button"
                                             onClick={() =>
-                                              handleSaveAllocationEdit(allocation)
+                                              handleSaveAllocationEdit(
+                                                allocation,
+                                              )
                                             }
-                                            disabled={savingAllocationId === allocation.id}
+                                            disabled={
+                                              savingAllocationId ===
+                                              allocation.id
+                                            }
                                           >
                                             Save
                                           </button>
@@ -946,19 +1010,25 @@ export default function ShipmentAllocationPage() {
                                               setEditingAllocationId(null);
                                               setEditingAllocationQty("");
                                             }}
-                                            disabled={savingAllocationId === allocation.id}
+                                            disabled={
+                                              savingAllocationId ===
+                                              allocation.id
+                                            }
                                           >
                                             Cancel
                                           </button>
                                         </div>
                                       ) : (
                                         <>
-                                          {allocation.quantity} {line.default_unit}
+                                          {allocation.quantity}{" "}
+                                          {line.default_unit}
                                         </>
                                       )}
                                     </td>
 
-                                    <td>{prettyAttributes(allocation.attributes)}</td>
+                                    <td>
+                                      {prettyAttributes(allocation.attributes)}
+                                    </td>
                                     <td>{allocation.visibility_tier}</td>
 
                                     <td>
@@ -973,10 +1043,15 @@ export default function ShipmentAllocationPage() {
                                           <button
                                             type="button"
                                             className="secondary-button"
-                                            onClick={() => startEditAllocation(allocation)}
+                                            onClick={() =>
+                                              startEditAllocation(allocation)
+                                            }
                                             disabled={
-                                              !statusCanAllocate(selectedShipment.status) ||
-                                              savingAllocationId === allocation.id
+                                              !statusCanAllocate(
+                                                selectedShipment.status,
+                                              ) ||
+                                              savingAllocationId ===
+                                                allocation.id
                                             }
                                           >
                                             Edit
@@ -986,9 +1061,13 @@ export default function ShipmentAllocationPage() {
                                         <button
                                           type="button"
                                           className="secondary-button"
-                                          onClick={() => handleDeleteAllocation(allocation)}
+                                          onClick={() =>
+                                            handleDeleteAllocation(allocation)
+                                          }
                                           disabled={
-                                            !statusCanAllocate(selectedShipment.status) ||
+                                            !statusCanAllocate(
+                                              selectedShipment.status,
+                                            ) ||
                                             savingAllocationId === allocation.id
                                           }
                                         >

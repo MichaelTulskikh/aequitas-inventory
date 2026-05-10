@@ -1,17 +1,12 @@
-.page {}
-
 .header {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 16px;
 }
-
-.title {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.subtitle {
-  margin-top: 6px;
-  color: var(--text-muted);
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .twoCol {
@@ -22,132 +17,8 @@
   margin-top: 16px;
 }
 
-.tableWrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-/* Shipment status overview */
-.statusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
-  padding: 12px;
-}
-
-.statusCard {
-  position: relative;
-  min-width: 0;
-  min-height: 68px;
-  padding: 8px 10px 8px 12px;
-  border: 1px solid var(--line-main);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  overflow: hidden;
-}
-
-.statusCard::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--line-main);
-}
-
-.statusLabel {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.statusValue {
-  font-size: 18px;
-  line-height: 1.1;
-  font-weight: 700;
-  color: var(--text-strong);
-}
-
-.statusDraft {
-  background: #fafbfc;
-  border-color: #d7dde3;
-}
-
-.statusDraft::before {
-  background: #7b8894;
-}
-
-.statusSubmitted {
-  background: #edf4fa;
-  border-color: #b8cddd;
-}
-
-.statusSubmitted::before {
-  background: var(--accent);
-}
-
-.statusApproved {
-  background: #eef6ee;
-  border-color: #c6dcc8;
-}
-
-.statusApproved::before {
-  background: #4b7a52;
-}
-
-.statusFulfilled {
-  background: #edf7f2;
-  border-color: #b7d6c3;
-}
-
-.statusFulfilled::before {
-  background: var(--success);
-}
-
-.statusCancelled {
-  background: #fbf5ea;
-  border-color: #e1cfaa;
-}
-
-.statusCancelled::before {
-  background: var(--warning);
-}
-
-.statusRejected {
-  background: #fbf1f1;
-  border-color: #d9b4b4;
-}
-
-.statusRejected::before {
-  background: var(--danger);
-}
-
-@media (max-width: 1200px) {
-  .statusGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 1100px) {
   .twoCol {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .statusGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .statusCard {
-    min-height: 64px;
-  }
-
-  .statusValue {
-    font-size: 17px;
   }
 }

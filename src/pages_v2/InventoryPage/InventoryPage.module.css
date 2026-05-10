@@ -258,7 +258,7 @@
 }
 
 /* Table */
-.tableWrapper {
+.tablepage__wrapper {
   position: relative;
   background: var(--bg-panel);
   border: 1px solid var(--line-main);

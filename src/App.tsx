@@ -64,7 +64,7 @@ export default function App() {
     }
 
     initAuth();
-  }, []);
+  }, [setUserFromToken]);
 
   return (
     <Routes>
@@ -84,18 +84,18 @@ export default function App() {
         <Route
           path="/inventory"
           element={
-            <RequireCompleteProfile>
-              <InventoryPageV2 />
-            </RequireCompleteProfile>
+            // <RequireCompleteProfile>
+            <InventoryPageV2 />
+            // </RequireCompleteProfile>
           }
         />
         <Route path="/inventory/receive" element={<ReceiveInventoryPage />} />
         <Route
           path="/shipments"
           element={
-            <RequireCompleteProfile>
-              <ShipmentsPage />
-            </RequireCompleteProfile>
+            // <RequireCompleteProfile>
+            <ShipmentsPage />
+            // </RequireCompleteProfile>
           }
         />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />

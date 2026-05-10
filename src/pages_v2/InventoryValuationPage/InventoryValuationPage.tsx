@@ -232,7 +232,7 @@ export default function InventoryValuationPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Inventory Valuation</h1>
         <p className={styles.subtitle}>

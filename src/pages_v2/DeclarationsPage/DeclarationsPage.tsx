@@ -73,7 +73,10 @@ async function createDeclaration(payload: CreateDeclarationPayload) {
   });
 }
 
-async function updateDeclaration(id: string, payload: UpdateDeclarationPayload) {
+async function updateDeclaration(
+  id: string,
+  payload: UpdateDeclarationPayload,
+) {
   return apiFetch(`/v2/declarations/${id}`, {
     method: "PUT",
     body: JSON.stringify(payload),
@@ -223,7 +226,9 @@ export default function DeclarationsPage() {
   function buildPayload(): CreateDeclarationPayload | UpdateDeclarationPayload {
     const declaration_number = form.declaration_number.trim();
     const donor_id = form.donor_id.trim() ? form.donor_id.trim() : null;
-    const country_code = form.country_code.trim() ? form.country_code.trim() : null;
+    const country_code = form.country_code.trim()
+      ? form.country_code.trim()
+      : null;
     const declared_at = form.declared_at.trim()
       ? toApiDatetime(form.declared_at)
       : null;
@@ -235,7 +240,7 @@ export default function DeclarationsPage() {
 
     if (form.is_undeclared && !declaration_number.startsWith("UNDECLARED-")) {
       throw new Error(
-        "Undeclared declarations must use a declaration number starting with UNDECLARED-"
+        "Undeclared declarations must use a declaration number starting with UNDECLARED-",
       );
     }
 
@@ -313,7 +318,7 @@ export default function DeclarationsPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading declarations…</span>
@@ -323,7 +328,7 @@ export default function DeclarationsPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -473,8 +478,8 @@ export default function DeclarationsPage() {
                     ? "Saving..."
                     : "Creating..."
                   : editingId
-                  ? "Save Changes"
-                  : "Create Declaration"}
+                    ? "Save Changes"
+                    : "Create Declaration"}
               </button>
             </div>
           </form>
@@ -501,7 +506,7 @@ export default function DeclarationsPage() {
           </div>
 
           {filteredDeclarations.length === 0 ? (
-            <div className="dashboard-empty">No declarations found.</div>
+            <div className="table-section--empty">No declarations found.</div>
           ) : (
             <div className={styles.tableWrap}>
               <table className="shipments-table">
@@ -524,7 +529,9 @@ export default function DeclarationsPage() {
                           {item.declaration_number}
                         </div>
                         {item.notes ? (
-                          <div className={styles.secondaryCell}>{item.notes}</div>
+                          <div className={styles.secondaryCell}>
+                            {item.notes}
+                          </div>
                         ) : null}
                       </td>
                       <td>{item.donor?.display_name || "—"}</td>

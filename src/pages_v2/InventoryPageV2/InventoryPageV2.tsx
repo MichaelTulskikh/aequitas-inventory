@@ -540,7 +540,7 @@ export default function InventoryPageV2() {
   }, [items]);
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -625,7 +625,7 @@ export default function InventoryPageV2() {
           <span>Loading inventory…</span>
         </div>
       ) : items.length === 0 ? (
-        <div className="dashboard-empty">No inventory items found.</div>
+        <div className="table-section--empty">No inventory items found.</div>
       ) : (
         <>
           <div className={styles.itemGrid}>
@@ -791,7 +791,7 @@ export default function InventoryPageV2() {
             })}
           </div>
 
-          <section className="panel" style={{marginTop: "10px"}}>
+          <section className="panel" style={{ marginTop: "10px" }}>
             <div className={styles.paginationBar}>
               <div className={styles.paginationSummary}>
                 Page {page} of {totalPages} • {total} total item(s)

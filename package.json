@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "i18next": "^25.8.7",
     "konva": "^10.2.3",
     "react": "^19.2.0",
@@ -23,6 +24,7 @@
     "react-konva": "^19.2.3",
     "react-router-dom": "^7.13.0",
     "recharts": "^3.7.0",
+    "sass": "^1.99.0",
     "swagger-ui-react": "^5.32.1"
   },
   "devDependencies": {

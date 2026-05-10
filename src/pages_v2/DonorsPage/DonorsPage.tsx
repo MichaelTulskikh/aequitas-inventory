@@ -151,7 +151,7 @@ export default function DonorsPage() {
       ]
         .join(" ")
         .toLowerCase()
-        .includes(q)
+        .includes(q),
     );
   }, [donors, search]);
 
@@ -271,7 +271,7 @@ export default function DonorsPage() {
 
   if (loading) {
     return (
-      <div className={`page-shell ${styles.page}`}>
+      <div className={`page__wrapper ${styles.page}`}>
         <div className="dashboard-loading">
           <div className="spinner" />
           <span>Loading donors…</span>
@@ -281,7 +281,7 @@ export default function DonorsPage() {
   }
 
   return (
-    <div className={`page-shell ${styles.page}`}>
+    <div className={`page__wrapper ${styles.page}`}>
       <div className={styles.header}>
         <div>
           <div className={styles.breadcrumb}>
@@ -451,8 +451,8 @@ export default function DonorsPage() {
                     ? "Saving..."
                     : "Creating..."
                   : editingId
-                  ? "Save Changes"
-                  : "Create Donor"}
+                    ? "Save Changes"
+                    : "Create Donor"}
               </button>
             </div>
           </form>
@@ -479,7 +479,7 @@ export default function DonorsPage() {
           </div>
 
           {filteredDonors.length === 0 ? (
-            <div className="dashboard-empty">No donors found.</div>
+            <div className="table-section--empty">No donors found.</div>
           ) : (
             <div className={styles.tableWrap}>
               <table className="shipments-table">

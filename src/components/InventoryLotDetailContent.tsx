@@ -249,12 +249,14 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
 
   if (error && !lot) {
     return (
-      <div className="dashboard-error">Error: {error || "Lot not found"}</div>
+      <div className="table-section--error">
+        Error: {error || "Lot not found"}
+      </div>
     );
   }
 
   if (!lot) {
-    return <div className="dashboard-error">Error: Lot not found</div>;
+    return <div className="table-section--error">Error: Lot not found</div>;
   }
 
   return (
@@ -514,7 +516,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
 
           {!editingAttributes ? (
             Object.keys(lot.attributes || {}).length === 0 ? (
-              <div className="dashboard-empty">No lot attributes.</div>
+              <div className="table-section--empty">No lot attributes.</div>
             ) : (
               <div className={styles.attributeList}>
                 {Object.entries(lot.attributes).map(([key, value]) => (
@@ -527,7 +529,7 @@ export default function InventoryLotDetailContent({ lotId }: Props) {
           ) : (
             <form className={styles.form} onSubmit={handleSaveAttributes}>
               {(lot.attribute_definitions || []).length === 0 ? (
-                <div className="dashboard-empty">
+                <div className="table-section--empty">
                   No attribute definitions for this item.
                 </div>
               ) : (
