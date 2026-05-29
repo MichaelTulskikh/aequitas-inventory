@@ -1,47 +1,67 @@
 import { Link } from "react-router-dom";
-import styles from "../../DashboardPage.module.css";
 import type { IInventoryByCategory } from "../../../../utils/types/dashboard/main";
-import clsx from "clsx";
+import skeletonStyles from "./skeleton.module.scss";
+import type { IDashboardTableProps } from "../../../../utils/types/dashboard/componentProps";
 
-interface IProps {
-  data: IInventoryByCategory[];
-}
+const SKELETON_ROWS = 15;
+const columns = ["Category", "Items", "Available Qty"];
 
-const AvailableInventory = ({ data }: IProps) => {
+const AvailableInventory = ({
+  data,
+  loading,
+}: IDashboardTableProps<IInventoryByCategory[]>) => {
   return (
     <section className="table-section">
       <div className="table-section__header">
-        <h2 className={styles.title}>Available Inventory by Category</h2>
-        <Link to="/inventory" className={styles.link}>
-          Open inventory
-        </Link>
+        <h2>Available Inventory by Category</h2>
+        <Link to="/inventory">Open inventory</Link>
       </div>
 
       <div className="table-section__card">
-        {data.length === 0 ? (
-          <div className="table-section--empty">No inventory found.</div>
-        ) : (
-          <div className={clsx("table-section__wrapper")}>
-            <table className="table-section__table">
-              <thead>
+        <div className="table-section__wrapper">
+          <table className="table-section__table">
+            <thead>
+              <tr>
+                {columns.map((i) => (
+                  <th key={`th-${i}`}>{i}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+                  <tr key={i}>
+                    {columns.map((i) => (
+                      <td
+                        key={`td-${i}`}
+                        data-column={i.toLowerCase()}
+                        className={skeletonStyles.cell}
+                      >
+                        <div className={skeletonStyles.skeleton} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : data.length === 0 ? (
                 <tr>
-                  <th>Category</th>
-                  <th>Items</th>
-                  <th>Available Qty</th>
+                  <td colSpan={5}>
+                    <div className="table-section--empty">
+                      No inventory found.
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
+              ) : (
+                data.map((row) => (
                   <tr key={row.category_id || row.category_name}>
                     <td>{row.category_name}</td>
                     <td>{row.item_count}</td>
                     <td>{row.total_available_quantity}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

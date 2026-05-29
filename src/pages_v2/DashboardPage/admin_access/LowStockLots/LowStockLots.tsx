@@ -1,34 +1,56 @@
 import { Link } from "react-router-dom";
 import type { ILowStockLots } from "../../../../utils/types/dashboard/main";
-import styles from "../../DashboardPage.module.css";
-import clsx from "clsx";
+import skeletonStyles from "./skeleton.module.scss";
+import type { IDashboardTableProps } from "../../../../utils/types/dashboard/componentProps";
 
-interface IProps {
-  data: ILowStockLots[];
-}
+const SKELETON_ROWS = 2;
+const columns = ["Item", "Location", "Available"];
 
-const LowStockLots = ({ data }: IProps) => {
+const LowStockLots = ({
+  data,
+  loading,
+}: IDashboardTableProps<ILowStockLots[]>) => {
   return (
     <section className="table-section">
       <div className="table-section__header">
-        <h2 className={styles.title}>Low Stock Lots</h2>
+        <h2>Low Stock Lots</h2>
       </div>
 
       <div className="table-section__card">
-        {!data || data.length === 0 ? (
-          <div className="table-section--empty">No low stock lots.</div>
-        ) : (
-          <div className={clsx("table-section__wrapper")}>
-            <table className="table-section__table">
-              <thead>
+        <div className="table-section__wrapper">
+          <table className="table-section__table">
+            <thead>
+              <tr>
+                {columns.map((i) => (
+                  <th key={`th-${i}`}>{i}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+                  <tr key={i}>
+                    {columns.map((i) => (
+                      <td
+                        key={`td-${i}`}
+                        data-column={i.toLowerCase()}
+                        className={skeletonStyles.cell}
+                      >
+                        <div className={skeletonStyles.skeleton} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : data.length === 0 ? (
                 <tr>
-                  <th>Item</th>
-                  <th>Location</th>
-                  <th>Available</th>
+                  <td colSpan={5}>
+                    <div className="table-section--empty">
+                      No low stock lots.
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {data.map((lot) => (
+              ) : (
+                data.map((lot) => (
                   <tr key={lot.inventory_lot_id}>
                     <td>
                       <Link to={`/inventory/lots/${lot.inventory_lot_id}`}>
@@ -38,11 +60,11 @@ const LowStockLots = ({ data }: IProps) => {
                     <td>{lot.location_name}</td>
                     <td>{lot.available_quantity}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

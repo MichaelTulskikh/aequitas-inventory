@@ -1,3 +1,7 @@
+.cell[data-column="shipment"] {
+  width: 55%;
+}
+
 .skeleton {
   position: relative;
   overflow: hidden;
@@ -19,5 +23,6 @@
     rgba(255, 255, 255, 0.35),
     transparent
   );
+
   animation: shimmer 1.4s infinite;
 }

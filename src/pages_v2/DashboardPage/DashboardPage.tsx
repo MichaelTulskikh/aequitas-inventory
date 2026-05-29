@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import clsx from "clsx";
 import { fetchDashboardSummary } from "../../api/dashboard";
 import styles from "./DashboardPage.module.css";
 import LowStockLots from "./admin_access/LowStockLots/LowStockLots";
@@ -45,7 +44,7 @@ export default function DashboardPage() {
   const summary = data?.summary;
 
   return (
-    <div className={clsx("page__wrapper", styles.page)}>
+    <div className="page__wrapper">
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className="page__heading">Dashboard</h1>
@@ -67,43 +66,44 @@ export default function DashboardPage() {
           loading={loading}
           data={summary?.my_active_shipments || []}
         />
-        {/* <RecentlyFulfilled
-              data={summary.recent_fulfilled_shipments || []}
-            />*/}
+        <RecentlyFulfilled
+          data={summary?.recent_fulfilled_shipments || []}
+          loading={loading}
+        />
       </div>
 
-      {/* <AvailableInventory
-            loading={loading}
-            data={summary.inventory_by_category || []}
-          />
+      <AvailableInventory
+        loading={loading}
+        data={summary?.inventory_by_category || []}
+      />
 
-          {isPrivileged && (
-            <>
-              <div className="twoCol">
-                {
-                  <LowStockLots
-                    loading={loading}
-                    data={summary.low_stock_lots || []}
-                  />
-                }
-                <ExpiringSoon
-                  loading={loading}
-                  data={summary.expiring_soon_lots || []}
-                />
-              </div>
+      {isPrivileged && (
+        <>
+          <div className="twoCol">
+            {
+              <LowStockLots
+                loading={loading}
+                data={summary?.low_stock_lots || []}
+              />
+            }
+            <ExpiringSoon
+              loading={loading}
+              data={summary?.expiring_soon_lots || []}
+            />
+          </div>
 
-              <div className="twoCol">
-                <RecentReceivals
-                  loading={loading}
-                  data={summary.recent_receives || []}
-                />
-                <RecentAdjustments
-                  loading={loading}
-                  data={summary.recent_adjustments || []}
-                />
-              </div>
-            </>
-          )}  */}
+          <div className="twoCol">
+            <RecentReceivals
+              loading={loading}
+              data={summary?.recent_receives || []}
+            />
+            <RecentAdjustments
+              loading={loading}
+              data={summary?.recent_adjustments || []}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

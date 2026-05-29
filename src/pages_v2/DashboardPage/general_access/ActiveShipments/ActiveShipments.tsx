@@ -4,16 +4,15 @@ import { normalizeStatus } from "../../../../utils/normalizers";
 import type { IActiveShipments } from "../../../../utils/types/dashboard/main";
 import clsx from "clsx";
 import skeletonStyles from "./skeleton.module.scss";
-
-interface IProps {
-  loading: boolean;
-  data: IActiveShipments[];
-}
+import type { IDashboardTableProps } from "../../../../utils/types/dashboard/componentProps";
 
 const SKELETON_ROWS = 2;
 const columns = ["Shipment", "Status", "Requester", "Lines", "Created"];
 
-const ActiveShipments = ({ data, loading }: IProps) => {
+const ActiveShipments = ({
+  data,
+  loading,
+}: IDashboardTableProps<IActiveShipments[]>) => {
   return (
     <section className="table-section">
       <div className="table-section__header">
@@ -37,7 +36,7 @@ const ActiveShipments = ({ data, loading }: IProps) => {
                 Array.from({ length: SKELETON_ROWS }).map((_, i) => (
                   <tr key={i}>
                     {columns.map((i) => (
-                      <td key={`td-${i}`}>
+                      <td key={`td-${i}`} style={{ outline: "2px solid red" }}>
                         <div className={clsx(skeletonStyles.skeleton)} />
                       </td>
                     ))}

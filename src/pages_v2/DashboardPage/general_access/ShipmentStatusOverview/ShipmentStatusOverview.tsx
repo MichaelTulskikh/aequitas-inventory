@@ -2,15 +2,14 @@ import clsx from "clsx";
 import type { IShipmentsByStatus } from "../../../../utils/types/dashboard/main";
 import styles from "./ShipmentStatusOverview.module.scss";
 import skeletonStyles from "./skeleton.module.scss";
-
-interface IProps {
-  loading: boolean;
-  data: IShipmentsByStatus | null;
-}
+import type { IDashboardTableProps } from "../../../../utils/types/dashboard/componentProps";
 
 const SKELETON_CARDS = 6;
 
-const ShipmentStatusOverview = ({ data, loading }: IProps) => {
+const ShipmentStatusOverview = ({
+  data,
+  loading,
+}: IDashboardTableProps<IShipmentsByStatus | null>) => {
   return (
     <section className="table-section">
       <div className="table-section__header">
@@ -37,21 +36,25 @@ const ShipmentStatusOverview = ({ data, loading }: IProps) => {
                 />
               </div>
             ))
-          : data &&
-            Object.entries(data).map(([k, v]: [string, number]) => {
-              const status = k.charAt(0).toUpperCase() + k.slice(1);
+          : data
+            ? Object.entries(data).map(([k, v]) => {
+                const status = k.charAt(0).toUpperCase() + k.slice(1);
 
-              return (
-                <div
-                  key={k}
-                  className={clsx(styles.statusCard, styles[`status${status}`])}
-                >
-                  <div className={styles.statusLabel}>{status}</div>
+                return (
+                  <div
+                    key={k}
+                    className={clsx(
+                      styles.statusCard,
+                      styles[`status${status}`],
+                    )}
+                  >
+                    <div className={styles.statusLabel}>{status}</div>
 
-                  <div className={styles.statusValue}>{v}</div>
-                </div>
-              );
-            })}
+                    <div className={styles.statusValue}>{v}</div>
+                  </div>
+                );
+              })
+            : null}
       </div>
     </section>
   );
