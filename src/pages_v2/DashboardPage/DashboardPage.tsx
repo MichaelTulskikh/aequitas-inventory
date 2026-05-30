@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { fetchDashboardSummary } from "../../api/dashboard";
-import styles from "./DashboardPage.module.css";
 import LowStockLots from "./admin_access/LowStockLots/LowStockLots";
 import ExpiringSoon from "./admin_access/ExpiringSoon/ExpiringSoon";
 import RecentAdjustments from "./admin_access/RecentAdjustments/RecentAdjustments";
@@ -45,14 +44,14 @@ export default function DashboardPage() {
 
   return (
     <div className="page__wrapper">
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
+      <div className="page__header">
+        <div className="page__header--left">
           <h1 className="page__heading">Dashboard</h1>
           <p className="page__description">
             Warehouse activity, shipment workflow, and inventory overview.
           </p>
         </div>
-        {loading && <Loader />}
+        <div className="page__header--right"> {loading && <Loader />}</div>
       </div>
       {error && <div className="alert-error">Error: {error}</div>}
 
@@ -61,7 +60,7 @@ export default function DashboardPage() {
         data={summary?.shipments_by_status || null}
       />
 
-      <div className="twoCol">
+      <div className="grid-cols-2">
         <ActiveShipments
           loading={loading}
           data={summary?.my_active_shipments || []}
@@ -79,7 +78,7 @@ export default function DashboardPage() {
 
       {isPrivileged && (
         <>
-          <div className="twoCol">
+          <div className="grid-cols-2">
             {
               <LowStockLots
                 loading={loading}
@@ -92,7 +91,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="twoCol">
+          <div className="grid-cols-2">
             <RecentReceivals
               loading={loading}
               data={summary?.recent_receives || []}

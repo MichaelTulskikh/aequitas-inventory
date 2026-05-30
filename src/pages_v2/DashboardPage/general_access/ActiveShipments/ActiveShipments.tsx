@@ -36,7 +36,7 @@ const ActiveShipments = ({
                 Array.from({ length: SKELETON_ROWS }).map((_, i) => (
                   <tr key={i}>
                     {columns.map((i) => (
-                      <td key={`td-${i}`} style={{ outline: "2px solid red" }}>
+                      <td key={`td-${i}`}>
                         <div className={clsx(skeletonStyles.skeleton)} />
                       </td>
                     ))}
