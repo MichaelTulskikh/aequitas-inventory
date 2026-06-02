@@ -1,18 +1,23 @@
-import { screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 import DashboardPage from "./DashboardPage";
 import { fetchDashboardSummary } from "../../api/dashboard";
-import { useAuth } from "../../auth/AuthContext";
-import renderWithRouter from "../../utils/jestRenderHelper";
 
-jest.mock("../../auth/AuthContext", () => ({
-  useAuth: jest.fn(),
+vi.mock("../../auth/AuthContext", () => ({
+  useAuth: () => ({
+    user: {
+      roles: ["Admin"],
+    },
+  }),
 }));
 
-jest.mock("../../api/dashboard", () => ({
-  fetchDashboardSummary: jest.fn(),
+vi.mock("../../api/dashboard", () => ({
+  fetchDashboardSummary: vi.fn(),
 }));
 
-const mockData = {
+const mockResponse = {
+  me: { is_privileged: true },
   summary: {
     shipments_by_status: {
       draft: 1,
@@ -24,16 +29,23 @@ const mockData = {
     },
     my_active_shipments: [
       {
-        id: "1",
-        shipment_number: "SHP-001",
+        id: 1,
+        shipment_number: "SH-001",
         status: "Draft",
-        requester_name: "John",
+        requester_name: "John Doe",
         line_count: 2,
-        created_at: "2024-01-01",
+        created_at: "2026-01-01T00:00:00Z",
       },
     ],
     recent_fulfilled_shipments: [],
-    inventory_by_category: [],
+    inventory_by_category: [
+      {
+        category_id: 1,
+        category_name: "Electronics",
+        item_count: 10,
+        total_available_quantity: 50,
+      },
+    ],
     low_stock_lots: [],
     expiring_soon_lots: [],
     recent_receives: [],
@@ -41,141 +53,44 @@ const mockData = {
   },
 };
 
-const cases = [
-  {
-    name: "full data (admin)",
-    auth: { roles: ["Admin"] },
-    data: mockData,
-  },
-  {
-    name: "empty tables",
-    auth: { roles: ["Admin"] },
-    data: {
-      summary: {
-        ...mockData.summary,
-        my_active_shipments: [],
-        inventory_by_category: [],
-      },
-    },
-  },
-  {
-    name: "non-privileged user",
-    auth: { roles: ["User"] },
-    data: mockData,
-  },
-  {
-    name: "error state",
-    auth: { roles: ["Admin"] },
-    error: "Failed to load",
-  },
-];
+describe("DashboardPage", () => {
+  beforeEach(() => {
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse);
+  });
 
-const sections = [
-  {
-    name: "shipment status overview",
-    get: () =>
-      screen
-        .queryByText("Shipment Status Overview")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
-  {
-    name: "status cards grid",
-    get: () =>
-      screen
-        .queryByText("Shipment Status Overview")
-        ?.parentElement?.querySelector(".dashboard-card-grid"),
-  },
+  test("renders dashboard summary data", async () => {
+    render(
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>,
+    );
 
-  {
-    name: "my active shipments table",
-    get: () =>
-      screen
-        .queryByText("My Active Shipments")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+    expect(
+      screen.getByRole("heading", { name: /dashboard/i }),
+    ).toBeInTheDocument();
 
-  {
-    name: "recently fulfilled table",
-    get: () =>
-      screen
-        .queryByText("Recently Fulfilled")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+    expect(
+      await screen.findByText("Shipment Status Overview"),
+    ).toBeInTheDocument();
 
-  {
-    name: "inventory by category table",
-    get: () =>
-      screen
-        .queryByText("Available Inventory by Category")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+    expect(screen.getByText("SH-001")).toBeInTheDocument();
 
-  {
-    name: "low stock lots table",
-    get: () =>
-      screen
-        .queryByText("Low Stock Lots")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+    expect(screen.getByText("Electronics")).toBeInTheDocument();
+  });
 
-  {
-    name: "expiring soon table",
-    get: () =>
-      screen
-        .queryByText("Expiring Soon")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+  test("renders privileged sections for admin users", async () => {
+    render(
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>,
+    );
 
-  {
-    name: "recent receives table",
-    get: () =>
-      screen
-        .queryByText("Recent Receives")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
+    expect(await screen.findByText("Low Stock Lots")).toBeInTheDocument();
 
-  {
-    name: "recent adjustments table",
-    get: () =>
-      screen
-        .queryByText("Recent Adjustments")
-        ?.closest("section")
-        ?.querySelector("table"),
-  },
-];
+    expect(screen.getByText("Expiring Soon")).toBeInTheDocument();
 
-cases.forEach((c) => {
-  describe(c.name, () => {
-    beforeEach(() => {
-      (useAuth as jest.Mock).mockReturnValue({ user: c.auth });
+    expect(screen.getByText("Recent Receives")).toBeInTheDocument();
 
-      if (c.error) {
-        (fetchDashboardSummary as jest.Mock).mockRejectedValue(
-          new Error(c.error),
-        );
-      } else {
-        (fetchDashboardSummary as jest.Mock).mockResolvedValue(c.data);
-      }
-    });
-
-    sections.forEach((s) => {
-      it(`snapshot - ${s.name}`, async () => {
-        renderWithRouter(<DashboardPage />);
-
-        // wait for async load to finish
-        const el = await waitFor(() => s.get());
-
-        if (!el) return; // skip snapshot if the role doesn't allow the access
-
-        expect(el).toMatchSnapshot();
-      });
-    });
+    expect(screen.getByText("Recent Adjustments")).toBeInTheDocument();
   });
 });

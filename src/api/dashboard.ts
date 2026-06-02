@@ -14,7 +14,7 @@ export type DashboardSummaryResponse = {
       rejected: number;
     };
     my_active_shipments: Array<{
-      id: string;
+      id: string | number;
       shipment_number: string;
       status: string;
       requester_name: string | null;
@@ -22,13 +22,13 @@ export type DashboardSummaryResponse = {
       line_count: number;
     }>;
     recent_fulfilled_shipments: Array<{
-      id: string;
+      id: string | number;
       shipment_number: string;
       requester_name: string | null;
       fulfilled_at: string | null;
     }>;
     inventory_by_category: Array<{
-      category_id: string | null;
+      category_id: string | number | null;
       category_name: string;
       total_available_quantity: number;
       item_count: number;
@@ -70,7 +70,6 @@ export type DashboardSummaryResponse = {
 };
 
 export async function fetchDashboardSummary(): Promise<DashboardSummaryResponse> {
-
   const res = await apiFetch(`/v2/dashboard`);
 
   return res;
