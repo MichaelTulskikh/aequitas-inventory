@@ -1,23 +1,61 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { describe, expect, test, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import DashboardPage from "./DashboardPage";
 import { fetchDashboardSummary } from "../../api/dashboard";
 
+const mockUseAuth = vi.fn();
+
 vi.mock("../../auth/AuthContext", () => ({
-  useAuth: () => ({
-    user: {
-      roles: ["Admin"],
-    },
-  }),
+  useAuth: () => mockUseAuth(),
 }));
 
 vi.mock("../../api/dashboard", () => ({
   fetchDashboardSummary: vi.fn(),
 }));
 
+vi.mock(
+  "./general_access/ShipmentStatusOverview/ShipmentStatusOverview",
+  () => ({
+    default: () => <div>ShipmentStatusOverview</div>,
+  }),
+);
+
+vi.mock("./general_access/ActiveShipments/ActiveShipments", () => ({
+  default: () => <div>ActiveShipments</div>,
+}));
+
+vi.mock("./general_access/RecentlyFulfilled/RecentlyFulfilled", () => ({
+  default: () => <div>RecentlyFulfilled</div>,
+}));
+
+vi.mock("./general_access/AvailableInventory/AvailableInventory", () => ({
+  default: () => <div>AvailableInventory</div>,
+}));
+
+vi.mock("./admin_access/LowStockLots/LowStockLots", () => ({
+  default: () => <div>LowStockLots</div>,
+}));
+
+vi.mock("./admin_access/ExpiringSoon/ExpiringSoon", () => ({
+  default: () => <div>ExpiringSoon</div>,
+}));
+
+vi.mock("./admin_access/RecentReceivals/RecentReceivals", () => ({
+  default: () => <div>RecentReceivals</div>,
+}));
+
+vi.mock("./admin_access/RecentAdjustments/RecentAdjustments", () => ({
+  default: () => <div>RecentAdjustments</div>,
+}));
+
+vi.mock("../../components/common/Loader/Loader", () => ({
+  default: () => <div>Loader</div>,
+}));
+
 const mockResponse = {
-  me: { is_privileged: true },
+  me: {
+    is_privileged: true,
+  },
   summary: {
     shipments_by_status: {
       draft: 1,
@@ -27,25 +65,9 @@ const mockResponse = {
       cancelled: 5,
       rejected: 6,
     },
-    my_active_shipments: [
-      {
-        id: 1,
-        shipment_number: "SH-001",
-        status: "Draft",
-        requester_name: "John Doe",
-        line_count: 2,
-        created_at: "2026-01-01T00:00:00Z",
-      },
-    ],
+    my_active_shipments: [],
     recent_fulfilled_shipments: [],
-    inventory_by_category: [
-      {
-        category_id: 1,
-        category_name: "Electronics",
-        item_count: 10,
-        total_available_quantity: 50,
-      },
-    ],
+    inventory_by_category: [],
     low_stock_lots: [],
     expiring_soon_lots: [],
     recent_receives: [],
@@ -55,42 +77,94 @@ const mockResponse = {
 
 describe("DashboardPage", () => {
   beforeEach(() => {
-    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse);
+    vi.clearAllMocks();
   });
 
-  test("renders dashboard summary data", async () => {
-    render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>,
-    );
+  test("fetches dashboard data on mount", async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        roles: ["User"],
+      },
+    });
 
-    expect(
-      screen.getByRole("heading", { name: /dashboard/i }),
-    ).toBeInTheDocument();
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
 
-    expect(
-      await screen.findByText("Shipment Status Overview"),
-    ).toBeInTheDocument();
+    render(<DashboardPage />);
 
-    expect(screen.getByText("SH-001")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(fetchDashboardSummary).toHaveBeenCalledTimes(1);
+    });
+  });
 
-    expect(screen.getByText("Electronics")).toBeInTheDocument();
+  test("shows error when request fails", async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        roles: ["User"],
+      },
+    });
+
+    vi.mocked(fetchDashboardSummary).mockRejectedValue(new Error("API Error"));
+
+    render(<DashboardPage />);
+
+    expect(await screen.findByText(/api error/i)).toBeInTheDocument();
   });
 
   test("renders privileged sections for admin users", async () => {
-    render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>,
+    mockUseAuth.mockReturnValue({
+      user: {
+        roles: ["Admin"],
+      },
+    });
+
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
+
+    render(<DashboardPage />);
+
+    expect(
+      await screen.findByText("ShipmentStatusOverview"),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("LowStockLots")).toBeInTheDocument();
+    expect(screen.getByText("ExpiringSoon")).toBeInTheDocument();
+    expect(screen.getByText("RecentReceivals")).toBeInTheDocument();
+    expect(screen.getByText("RecentAdjustments")).toBeInTheDocument();
+  });
+
+  test("does not render privileged sections for regular users", async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        roles: ["User"],
+      },
+    });
+
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
+
+    render(<DashboardPage />);
+
+    expect(
+      await screen.findByText("ShipmentStatusOverview"),
+    ).toBeInTheDocument();
+
+    expect(screen.queryByText("LowStockLots")).not.toBeInTheDocument();
+    expect(screen.queryByText("ExpiringSoon")).not.toBeInTheDocument();
+    expect(screen.queryByText("RecentReceivals")).not.toBeInTheDocument();
+    expect(screen.queryByText("RecentAdjustments")).not.toBeInTheDocument();
+  });
+
+  test("shows loader while data is loading", () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        roles: ["User"],
+      },
+    });
+
+    vi.mocked(fetchDashboardSummary).mockImplementation(
+      () => new Promise(() => {}),
     );
 
-    expect(await screen.findByText("Low Stock Lots")).toBeInTheDocument();
+    render(<DashboardPage />);
 
-    expect(screen.getByText("Expiring Soon")).toBeInTheDocument();
-
-    expect(screen.getByText("Recent Receives")).toBeInTheDocument();
-
-    expect(screen.getByText("Recent Adjustments")).toBeInTheDocument();
+    expect(screen.getByText("Loader")).toBeInTheDocument();
   });
 });
