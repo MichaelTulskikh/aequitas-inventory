@@ -2,13 +2,18 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import DashboardPage from "./DashboardPage";
 import { fetchDashboardSummary } from "../../api/dashboard";
+import type { IDashboardSummaryResponse } from "../../utils/types/dashboard/main";
 
+// In tests, there is no auth provider, so we replace useAuth with a mock function.
+// #AUTHTEST
 const mockUseAuth = vi.fn();
 
 vi.mock("../../auth/AuthContext", () => ({
   useAuth: () => mockUseAuth(),
 }));
 
+// We don't want tests making real API requests. So we replace fetchDashboardSummary() with a fake function.
+// #APITEST
 vi.mock("../../api/dashboard", () => ({
   fetchDashboardSummary: vi.fn(),
 }));
@@ -81,13 +86,16 @@ describe("DashboardPage", () => {
   });
 
   test("fetches dashboard data on mount", async () => {
+    // #AUTHTEST test different permission levels
     mockUseAuth.mockReturnValue({
       user: {
         roles: ["User"],
       },
     });
-
-    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
+    // #APITEST Then in each test we control its behavior (SUCCESS):
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(
+      mockResponse as IDashboardSummaryResponse,
+    );
 
     render(<DashboardPage />);
 
@@ -97,12 +105,13 @@ describe("DashboardPage", () => {
   });
 
   test("shows error when request fails", async () => {
+    // #AUTHTEST
     mockUseAuth.mockReturnValue({
       user: {
         roles: ["User"],
       },
     });
-
+    // #APITEST (ERROR):
     vi.mocked(fetchDashboardSummary).mockRejectedValue(new Error("API Error"));
 
     render(<DashboardPage />);
@@ -111,13 +120,16 @@ describe("DashboardPage", () => {
   });
 
   test("renders privileged sections for admin users", async () => {
+    // #AUTHTEST
     mockUseAuth.mockReturnValue({
       user: {
         roles: ["Admin"],
       },
     });
-
-    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
+    // #APITEST (SUCCESS):
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(
+      mockResponse as IDashboardSummaryResponse,
+    );
 
     render(<DashboardPage />);
 
@@ -132,13 +144,16 @@ describe("DashboardPage", () => {
   });
 
   test("does not render privileged sections for regular users", async () => {
+    // #AUTHTEST
     mockUseAuth.mockReturnValue({
       user: {
         roles: ["User"],
       },
     });
-
-    vi.mocked(fetchDashboardSummary).mockResolvedValue(mockResponse as never);
+    // #APITEST (SUCCESS):
+    vi.mocked(fetchDashboardSummary).mockResolvedValue(
+      mockResponse as IDashboardSummaryResponse,
+    );
 
     render(<DashboardPage />);
 
@@ -153,12 +168,13 @@ describe("DashboardPage", () => {
   });
 
   test("shows loader while data is loading", () => {
+    // #AUTHTEST
     mockUseAuth.mockReturnValue({
       user: {
         roles: ["User"],
       },
     });
-
+    // #APITEST (NEVER):
     vi.mocked(fetchDashboardSummary).mockImplementation(
       () => new Promise(() => {}),
     );
