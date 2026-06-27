@@ -33,6 +33,7 @@ const ExpiringSoon = ({
                   <tr key={i}>
                     {columns.map((i) => (
                       <td
+                        data-testid="skeleton"
                         key={`td-${i}`}
                         data-column={i.toLowerCase()}
                         className={skeletonStyles.cell}

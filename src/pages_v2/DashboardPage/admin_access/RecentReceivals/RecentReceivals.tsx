@@ -6,7 +6,7 @@ import skeletonStyles from "./skeleton.module.scss";
 const SKELETON_ROWS = 2;
 const columns = ["Time", "Item", "Qty", "Location"];
 
-const RecentReceives = ({
+const RecentReceivals = ({
   data,
   loading,
 }: IDashboardTableProps<IRecentReceivals[]>) => {
@@ -32,6 +32,7 @@ const RecentReceives = ({
                   <tr key={i}>
                     {columns.map((i) => (
                       <td
+                        data-testid="skeleton"
                         key={`td-${i}`}
                         data-column={i.toLowerCase()}
                         className={skeletonStyles.cell}
@@ -67,4 +68,4 @@ const RecentReceives = ({
   );
 };
 
-export default RecentReceives;
+export default RecentReceivals;

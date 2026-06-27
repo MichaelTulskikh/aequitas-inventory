@@ -53,7 +53,11 @@ export default function DashboardPage() {
         </div>
         <div className="page__header--right"> {loading && <Loader />}</div>
       </div>
-      {error && <div className="alert-error">Error: {error}</div>}
+      {error && (
+        <div role="alert" className="alert-error">
+          Error: {error}
+        </div>
+      )}
 
       <ShipmentStatusOverview
         loading={loading}

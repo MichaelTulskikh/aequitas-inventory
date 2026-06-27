@@ -18,6 +18,8 @@ vi.mock("../../api/dashboard", () => ({
   fetchDashboardSummary: vi.fn(),
 }));
 
+// Child component mocks
+// #CHILDMOCK:
 vi.mock(
   "./general_access/ShipmentStatusOverview/ShipmentStatusOverview",
   () => ({
@@ -56,6 +58,7 @@ vi.mock("./admin_access/RecentAdjustments/RecentAdjustments", () => ({
 vi.mock("../../components/common/Loader/Loader", () => ({
   default: () => <div>Loader</div>,
 }));
+// :#CHILDMOCK
 
 const mockResponse = {
   me: {
@@ -116,7 +119,7 @@ describe("DashboardPage", () => {
 
     render(<DashboardPage />);
 
-    expect(await screen.findByText(/api error/i)).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
   });
 
   test("renders privileged sections for admin users", async () => {

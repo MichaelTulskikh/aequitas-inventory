@@ -19,7 +19,11 @@ const ShipmentStatusOverview = ({
       <div className={styles.statusGrid}>
         {loading
           ? Array.from({ length: SKELETON_CARDS }).map((_, i) => (
-              <div key={i} className={skeletonStyles.skeletonCard}>
+              <div
+                data-testid="skeleton"
+                key={i}
+                className={skeletonStyles.skeletonCard}
+              >
                 <div
                   className={clsx(
                     skeletonStyles.skeleton,
