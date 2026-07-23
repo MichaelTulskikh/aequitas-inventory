@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import LowStockLots from "./LowStockLots";
 import type { ILowStockLots } from "../../../../utils/types/dashboard/main";
+import renderWithRouter from "../../../../utils/jestRenderHelper";
 
 const lots: ILowStockLots[] = [
   {
@@ -17,31 +17,19 @@ const lots: ILowStockLots[] = [
 
 describe("LowStockLots", () => {
   test("renders loading skeleton", () => {
-    render(
-      <MemoryRouter>
-        <LowStockLots loading data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<LowStockLots loading data={[]} />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   test("renders empty state", () => {
-    render(
-      <MemoryRouter>
-        <LowStockLots loading={false} data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<LowStockLots loading={false} data={[]} />);
 
     expect(screen.getByText(/no low stock lots/i)).toBeInTheDocument();
   });
 
   test("renders low stock lots", () => {
-    render(
-      <MemoryRouter>
-        <LowStockLots loading={false} data={lots} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<LowStockLots loading={false} data={lots} />);
 
     const { item_name, location_name, available_quantity } = lots[0];
 
@@ -51,11 +39,7 @@ describe("LowStockLots", () => {
   });
 
   test("renders inventory lot link", () => {
-    render(
-      <MemoryRouter>
-        <LowStockLots loading={false} data={lots} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<LowStockLots loading={false} data={lots} />);
 
     expect(
       screen.getByRole("link", { name: lots[0].item_name }),

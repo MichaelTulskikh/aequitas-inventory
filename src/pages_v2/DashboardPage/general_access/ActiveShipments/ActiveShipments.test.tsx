@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import ActiveShipments from "./ActiveShipments";
 import type { IActiveShipments } from "../../../../utils/types/dashboard/main";
 import { formatDate } from "../../../../utils/dateTimeFormatters";
+import renderWithRouter from "../../../../utils/jestRenderHelper";
 
 vi.mock("../../../../utils/dateTimeFormatters", () => ({
   formatDate: vi.fn(() => "01/01/2026"),
@@ -26,31 +26,19 @@ const shipments: IActiveShipments[] = [
 
 describe("ActiveShipments", () => {
   test("renders loading skeleton", () => {
-    render(
-      <MemoryRouter>
-        <ActiveShipments loading data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ActiveShipments loading data={[]} />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   test("renders empty state", () => {
-    render(
-      <MemoryRouter>
-        <ActiveShipments loading={false} data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ActiveShipments loading={false} data={[]} />);
 
     expect(screen.getByText(/no active shipments/i)).toBeInTheDocument();
   });
 
   test("renders shipment information", () => {
-    render(
-      <MemoryRouter>
-        <ActiveShipments loading={false} data={shipments} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ActiveShipments loading={false} data={shipments} />);
     const { shipment_number, status, created_at, line_count, requester_name } =
       shipments[0];
     expect(screen.getByText(shipment_number)).toBeInTheDocument();
@@ -61,29 +49,23 @@ describe("ActiveShipments", () => {
   });
 
   test("renders em dash when requester is null", () => {
-    render(
-      <MemoryRouter>
-        <ActiveShipments
-          loading={false}
-          data={[
-            {
-              ...shipments[0],
-              requester_name: null,
-            },
-          ]}
-        />
-      </MemoryRouter>,
+    renderWithRouter(
+      <ActiveShipments
+        loading={false}
+        data={[
+          {
+            ...shipments[0],
+            requester_name: null,
+          },
+        ]}
+      />,
     );
 
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   test("renders shipment link", () => {
-    render(
-      <MemoryRouter>
-        <ActiveShipments loading={false} data={shipments} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ActiveShipments loading={false} data={shipments} />);
 
     expect(
       screen.getByRole("link", { name: shipments[0].shipment_number }),

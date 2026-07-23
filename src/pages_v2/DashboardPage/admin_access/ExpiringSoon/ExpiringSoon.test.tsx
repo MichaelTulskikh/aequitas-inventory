@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import ExpiringSoon from "./ExpiringSoon";
 import { formatDate } from "../../../../utils/dateTimeFormatters";
 import type { IExpiringSoonLots } from "../../../../utils/types/dashboard/main";
+import renderWithRouter from "../../../../utils/jestRenderHelper";
 
 vi.mock("../../../../utils/dateTimeFormatters", () => ({
   formatDate: vi.fn(() => "01/01/2026"),
@@ -23,31 +23,19 @@ const lots: IExpiringSoonLots[] = [
 
 describe("ExpiringSoon", () => {
   test("renders loading skeleton", () => {
-    render(
-      <MemoryRouter>
-        <ExpiringSoon loading data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ExpiringSoon loading data={[]} />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   test("renders empty state", () => {
-    render(
-      <MemoryRouter>
-        <ExpiringSoon loading={false} data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ExpiringSoon loading={false} data={[]} />);
 
     expect(screen.getByText(/no expiring lots found/i)).toBeInTheDocument();
   });
 
   test("renders expiring lots", () => {
-    render(
-      <MemoryRouter>
-        <ExpiringSoon loading={false} data={lots} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ExpiringSoon loading={false} data={lots} />);
 
     const { item_name, expiration_date, available_quantity } = lots[0];
 
@@ -57,11 +45,7 @@ describe("ExpiringSoon", () => {
   });
 
   test("renders inventory lot link", () => {
-    render(
-      <MemoryRouter>
-        <ExpiringSoon loading={false} data={lots} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<ExpiringSoon loading={false} data={lots} />);
 
     expect(
       screen.getByRole("link", { name: lots[0].item_name }),

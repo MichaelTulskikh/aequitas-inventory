@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import RecentlyFulfilled from "./RecentlyFulfilled";
 import { formatDate } from "../../../../utils/dateTimeFormatters";
 import type { IRecentlyFulfilledShipments } from "../../../../utils/types/dashboard/main";
+import renderWithRouter from "../../../../utils/jestRenderHelper";
 
 vi.mock("../../../../utils/dateTimeFormatters", () => ({
   formatDate: vi.fn(() => "01/01/2026"),
@@ -20,21 +20,13 @@ const shipments: IRecentlyFulfilledShipments[] = [
 
 describe("RecentlyFulfilled", () => {
   test("renders loading skeleton", () => {
-    render(
-      <MemoryRouter>
-        <RecentlyFulfilled loading data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<RecentlyFulfilled loading data={[]} />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   test("renders empty state", () => {
-    render(
-      <MemoryRouter>
-        <RecentlyFulfilled loading={false} data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<RecentlyFulfilled loading={false} data={[]} />);
 
     expect(
       screen.getByText(/no recently fulfilled shipments/i),
@@ -42,11 +34,7 @@ describe("RecentlyFulfilled", () => {
   });
 
   test("renders shipment information", () => {
-    render(
-      <MemoryRouter>
-        <RecentlyFulfilled loading={false} data={shipments} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<RecentlyFulfilled loading={false} data={shipments} />);
 
     const { shipment_number, requester_name, fulfilled_at } = shipments[0];
 
@@ -56,29 +44,23 @@ describe("RecentlyFulfilled", () => {
   });
 
   test("renders em dash when requester is null", () => {
-    render(
-      <MemoryRouter>
-        <RecentlyFulfilled
-          loading={false}
-          data={[
-            {
-              ...shipments[0],
-              requester_name: null,
-            },
-          ]}
-        />
-      </MemoryRouter>,
+    renderWithRouter(
+      <RecentlyFulfilled
+        loading={false}
+        data={[
+          {
+            ...shipments[0],
+            requester_name: null,
+          },
+        ]}
+      />,
     );
 
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   test("renders shipment link", () => {
-    render(
-      <MemoryRouter>
-        <RecentlyFulfilled loading={false} data={shipments} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<RecentlyFulfilled loading={false} data={shipments} />);
 
     expect(
       screen.getByRole("link", { name: shipments[0].shipment_number }),

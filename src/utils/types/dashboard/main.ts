@@ -1,9 +1,11 @@
+// response:
 export interface IDashboardSummaryResponse {
   me: {
     is_privileged: boolean;
   }; // #tf is this
   summary: IDashboardSummary;
 }
+// :response
 
 export interface IDashboardSummary {
   shipments_by_status: IShipmentsByStatus;

@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import { fetchDashboardSummary } from "../../api/dashboard";
 import LowStockLots from "./admin_access/LowStockLots/LowStockLots";
 import ExpiringSoon from "./admin_access/ExpiringSoon/ExpiringSoon";
 import RecentAdjustments from "./admin_access/RecentAdjustments/RecentAdjustments";
@@ -9,38 +7,19 @@ import ActiveShipments from "./general_access/ActiveShipments/ActiveShipments";
 import RecentlyFulfilled from "./general_access/RecentlyFulfilled/RecentlyFulfilled";
 import ShipmentStatusOverview from "./general_access/ShipmentStatusOverview/ShipmentStatusOverview";
 import AvailableInventory from "./general_access/AvailableInventory/AvailableInventory";
-import type { IDashboardSummaryResponse } from "../../utils/types/dashboard/main";
 import Loader from "../../components/common/Loader/Loader";
+import { useDashboardSummary } from "../../hooks/useDashboardSummary";
 
 export default function DashboardPage() {
+  const { data, isLoading, error, isFetching } = useDashboardSummary();
   const { user } = useAuth();
   const isAdmin = user?.roles?.includes("Admin");
   const isStaff = user?.roles?.includes("Staff");
   const isPrivileged = isAdmin || isStaff;
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<IDashboardSummaryResponse | null>(null);
-
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await fetchDashboardSummary();
-      setData(result);
-    } catch (err: unknown) {
-      if (err instanceof Error)
-        setError(err?.message || "Failed to load dashboard");
-    } finally {
-      setLoading(false);
-    }
+  if (error instanceof Error) {
+    return <div>{error.message}</div>;
   }
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const summary = data?.summary;
 
   return (
     <div className="page__wrapper">
@@ -51,7 +30,10 @@ export default function DashboardPage() {
             Warehouse activity, shipment workflow, and inventory overview.
           </p>
         </div>
-        <div className="page__header--right"> {loading && <Loader />}</div>
+        <div className="page__header--right">
+          {" "}
+          {isLoading || (isFetching && <Loader />)}
+        </div>
       </div>
       {error && (
         <div role="alert" className="alert-error">
@@ -60,24 +42,24 @@ export default function DashboardPage() {
       )}
 
       <ShipmentStatusOverview
-        loading={loading}
-        data={summary?.shipments_by_status || null}
+        loading={isLoading}
+        data={data?.summary?.shipments_by_status || null}
       />
 
       <div className="grid-cols-2">
         <ActiveShipments
-          loading={loading}
-          data={summary?.my_active_shipments || []}
+          loading={isLoading}
+          data={data?.summary?.my_active_shipments || []}
         />
         <RecentlyFulfilled
-          data={summary?.recent_fulfilled_shipments || []}
-          loading={loading}
+          data={data?.summary?.recent_fulfilled_shipments || []}
+          loading={isLoading}
         />
       </div>
 
       <AvailableInventory
-        loading={loading}
-        data={summary?.inventory_by_category || []}
+        loading={isLoading}
+        data={data?.summary?.inventory_by_category || []}
       />
 
       {isPrivileged && (
@@ -85,24 +67,24 @@ export default function DashboardPage() {
           <div className="grid-cols-2">
             {
               <LowStockLots
-                loading={loading}
-                data={summary?.low_stock_lots || []}
+                loading={isLoading}
+                data={data?.summary?.low_stock_lots || []}
               />
             }
             <ExpiringSoon
-              loading={loading}
-              data={summary?.expiring_soon_lots || []}
+              loading={isLoading}
+              data={data?.summary?.expiring_soon_lots || []}
             />
           </div>
 
           <div className="grid-cols-2">
             <RecentReceivals
-              loading={loading}
-              data={summary?.recent_receives || []}
+              loading={isLoading}
+              data={data?.summary?.recent_receives || []}
             />
             <RecentAdjustments
-              loading={loading}
-              data={summary?.recent_adjustments || []}
+              loading={isLoading}
+              data={data?.summary?.recent_adjustments || []}
             />
           </div>
         </>

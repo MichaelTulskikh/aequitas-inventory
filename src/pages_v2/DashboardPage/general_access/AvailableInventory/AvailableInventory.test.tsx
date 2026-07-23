@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import AvailableInventory from "./AvailableInventory";
 import type { IInventoryByCategory } from "../../../../utils/types/dashboard/main";
+import renderWithRouter from "../../../../utils/jestRenderHelper";
 
 const inventory: IInventoryByCategory[] = [
   {
@@ -15,31 +15,19 @@ const inventory: IInventoryByCategory[] = [
 
 describe("AvailableInventory", () => {
   test("renders loading skeleton", () => {
-    render(
-      <MemoryRouter>
-        <AvailableInventory loading data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<AvailableInventory loading data={[]} />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   test("renders empty state", () => {
-    render(
-      <MemoryRouter>
-        <AvailableInventory loading={false} data={[]} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<AvailableInventory loading={false} data={[]} />);
 
     expect(screen.getByText(/no inventory found/i)).toBeInTheDocument();
   });
 
   test("renders inventory rows", () => {
-    render(
-      <MemoryRouter>
-        <AvailableInventory loading={false} data={inventory} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<AvailableInventory loading={false} data={inventory} />);
     const { category_name, item_count, total_available_quantity } =
       inventory[0];
     expect(screen.getByText(category_name)).toBeInTheDocument();
@@ -48,11 +36,7 @@ describe("AvailableInventory", () => {
   });
 
   test("renders inventory link", () => {
-    render(
-      <MemoryRouter>
-        <AvailableInventory loading={false} data={inventory} />
-      </MemoryRouter>,
-    );
+    renderWithRouter(<AvailableInventory loading={false} data={inventory} />);
 
     expect(
       screen.getByRole("link", { name: /open inventory/i }),
