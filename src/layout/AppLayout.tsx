@@ -111,9 +111,8 @@ export default function AppLayout() {
       title: "Operations",
       items: [
         { label: "Dashboard", to: "/", exact: true },
-        // delete later
+        // { label: "Inventory (old)", to: "/inventory-old" },
         { label: "Inventory", to: "/inventory" },
-        { label: "Inventory-V2", to: "/inventoryv2" },
         { label: "Shipments", to: "/shipments" },
         { label: "My Profile", to: "/profile" },
       ],

@@ -6,10 +6,10 @@ import type {
 } from "../types/inventoryPage.types";
 import type { IInventoryCatalogQuery } from "../../../utils/types/inventory/general";
 import {
-  useInventoryCatalog as useInventoryCatalogQuery,
-  useInventoryTags,
+  useInventoryCatalogQuery,
+  useInventoryTagsQuery,
+  useInventoryCategoriesQuery,
 } from "../../../hooks/queries/inventory/useInventory";
-import { useInventoryCategories } from "../../../hooks/queries/inventory/useInventory";
 
 interface IUseInventoryCatalogParams {
   search: string;
@@ -60,8 +60,8 @@ export function useInventoryCatalog({
   );
 
   const catalogQuery = useInventoryCatalogQuery(catalogParams);
-  const categoriesQuery = useInventoryCategories();
-  const tagsQuery = useInventoryTags();
+  const categoriesQuery = useInventoryCategoriesQuery();
+  const tagsQuery = useInventoryTagsQuery();
 
   const response = catalogQuery.data ?? null;
   const items = response?.items ?? [];

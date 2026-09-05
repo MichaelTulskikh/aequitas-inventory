@@ -19,7 +19,7 @@ import type {
 } from "../../../utils/types/inventory/general";
 
 type UseInventoryRequestOptions = {
-  onRequestSuccess?: () => Promise<void> | void;
+  onRequestSuccess?: () => Promise<unknown> | void;
 };
 
 export function useInventoryRequest(options: UseInventoryRequestOptions = {}) {

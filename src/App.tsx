@@ -82,17 +82,16 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
-        {/* delete later */}
-        <Route
-          path="/inventory"
+        {/* <Route
+          path="/inventory-old"
           element={
             // <RequireCompleteProfile>
             <InventoryPage />
             // </RequireCompleteProfile>
           }
-        />
+        /> */}
         <Route
-          path="/inventoryv2"
+          path="/inventory"
           element={
             // <RequireCompleteProfile>
             <InventoryPageV2 />

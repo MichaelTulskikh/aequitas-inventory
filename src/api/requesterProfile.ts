@@ -1,5 +1,7 @@
 import { apiFetch } from "./client";
 
+const ENDPOINT = "requester-profile";
+
 export type MyRequesterProfileResponse = {
   profile: {
     id: string;
@@ -14,7 +16,7 @@ export type MyRequesterProfileResponse = {
 };
 
 export async function getMyRequesterProfile(): Promise<MyRequesterProfileResponse> {
-  return apiFetch(`/v2/requester-profile/me`);
+  return apiFetch(`/v2/${ENDPOINT}/me`);
 }
 
 export async function upsertMyRequesterProfile(body: {
@@ -26,7 +28,7 @@ export async function upsertMyRequesterProfile(body: {
   official_address?: string | null;
   delivery_address?: string | null;
 }) {
-  return apiFetch(`/v2/requester-profile/me`, {
+  return apiFetch(`/v2/${ENDPOINT}/me`, {
     method: "PUT",
     body: JSON.stringify(body),
   });
