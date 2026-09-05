@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { normalizeSearchInput, parseNumberList } from "../utils/inventoryParsers";
+import {
+  normalizeSearchInput,
+  parseNumberList,
+} from "../utils/inventoryParsers";
 
 export function useInventoryFilters() {
   const [searchDraft, setSearchDraft] = useState("");
@@ -62,6 +65,7 @@ export function useInventoryFilters() {
   return {
     searchDraft,
     setSearchDraft,
+
     search,
     setSearch,
     applySearch,
@@ -75,27 +79,33 @@ export function useInventoryFilters() {
 
     page,
     setPage,
+
     pageSize,
     setPageSize,
 
     showOnlyAvailable,
     setShowOnlyAvailable,
+
     includeInternal,
     setIncludeInternal,
 
     tagSearch,
     setTagSearch,
+
     tagDropdownOpen,
     setTagDropdownOpen,
 
     palletSearchDraft,
     setPalletSearchDraft,
+
     boxSearchDraft,
     setBoxSearchDraft,
-    palletNumbers,
+
     boxNumbers,
-    applyPalletSearch,
     applyBoxSearch,
+
+    palletNumbers,
+    applyPalletSearch,
 
     resetToFirstPage,
     clearFilters,

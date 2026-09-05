@@ -5,12 +5,12 @@ import {
   receiveInventory,
   relocateInventoryLot,
   updateInventoryLotAttributes,
-} from "../../api/inventory";
+} from "../../../api/inventory";
 import type {
   IAdjustInventoryLotInput,
   IReceiveInventoryInput,
-} from "../../utils/types/inventory/general";
-import { QUERY_KEYS } from "../../utils/queryKeys";
+} from "../../../utils/types/inventory/general";
+import { QUERY_KEYS } from "../../../utils/queryKeys";
 
 export const useInventoryLot = (id: string) =>
   useQuery({

@@ -6,12 +6,12 @@ import {
   fetchInventoryItems,
   fetchInventoryLocationsTree,
   fetchInventoryTags,
-} from "../../api/inventory";
+} from "../../../api/inventory";
 import type {
   IFetchInventoryItemsQuery,
   IInventoryCatalogQuery,
-} from "../../utils/types/inventory/general";
-import { QUERY_KEYS } from "../../utils/queryKeys";
+} from "../../../utils/types/inventory/general";
+import { QUERY_KEYS } from "../../../utils/queryKeys";
 
 export const useInventoryCatalog = (params: IInventoryCatalogQuery = {}) =>
   useQuery({

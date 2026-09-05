@@ -1,16 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  fetchInventoryCatalog,
-  fetchInventoryCategories,
-  fetchInventoryTags,
-  type InventoryCatalogResponse,
-} from "../../../api/inventory";
+import { useMemo } from "react";
+
 import type {
   InventoryCategoryOption,
   InventoryTagOption,
 } from "../types/inventoryPage.types";
+import type { IInventoryCatalogQuery } from "../../../utils/types/inventory/general";
+import {
+  useInventoryCatalog as useInventoryCatalogQuery,
+  useInventoryTags,
+} from "../../../hooks/queries/inventory/useInventory";
+import { useInventoryCategories } from "../../../hooks/queries/inventory/useInventory";
 
-type UseInventoryCatalogParams = {
+interface IUseInventoryCatalogParams {
   search: string;
   selectedCategoryId: string;
   selectedTagIds: string[];
@@ -20,7 +21,7 @@ type UseInventoryCatalogParams = {
   pageSize: number;
   showOnlyAvailable: boolean;
   includeInternal: boolean;
-};
+}
 
 export function useInventoryCatalog({
   search,
@@ -32,100 +33,72 @@ export function useInventoryCatalog({
   pageSize,
   showOnlyAvailable,
   includeInternal,
-}: UseInventoryCatalogParams) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [response, setResponse] = useState<InventoryCatalogResponse | null>(
-    null,
+}: IUseInventoryCatalogParams) {
+  const catalogParams = useMemo<IInventoryCatalogQuery>(
+    () => ({
+      q: search || undefined,
+      category_id: selectedCategoryId || undefined,
+      tag_ids: selectedTagIds.length ? selectedTagIds : undefined,
+      pallet_numbers: palletNumbers.length ? palletNumbers : undefined,
+      box_numbers: boxNumbers.length ? boxNumbers : undefined,
+      page,
+      page_size: pageSize,
+      only_available: showOnlyAvailable,
+      include_internal: includeInternal,
+    }),
+    [
+      search,
+      selectedCategoryId,
+      selectedTagIds,
+      palletNumbers,
+      boxNumbers,
+      page,
+      pageSize,
+      showOnlyAvailable,
+      includeInternal,
+    ],
   );
 
-  const [categoryOptions, setCategoryOptions] = useState<
-    InventoryCategoryOption[]
-  >([]);
-  const [tagOptions, setTagOptions] = useState<InventoryTagOption[]>([]);
+  const catalogQuery = useInventoryCatalogQuery(catalogParams);
+  const categoriesQuery = useInventoryCategories();
+  const tagsQuery = useInventoryTags();
 
-  const loadInventory = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await fetchInventoryCatalog({
-        q: search || undefined,
-        category_id: selectedCategoryId || undefined,
-        tag_ids: selectedTagIds.length ? selectedTagIds : undefined,
-        pallet_numbers: palletNumbers.length ? palletNumbers : undefined,
-        box_numbers: boxNumbers.length ? boxNumbers : undefined,
-        page,
-        page_size: pageSize,
-        only_available: showOnlyAvailable,
-        include_internal: includeInternal,
-      });
-
-      setResponse(data);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load inventory");
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    search,
-    selectedCategoryId,
-    selectedTagIds,
-    palletNumbers,
-    boxNumbers,
-    page,
-    pageSize,
-    showOnlyAvailable,
-    includeInternal,
-  ]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadFilterOptions() {
-      try {
-        const [categories, tags] = await Promise.all([
-          fetchInventoryCategories(),
-          fetchInventoryTags(),
-        ]);
-
-        if (cancelled) return;
-
-        setCategoryOptions(categories.categories);
-        setTagOptions(tags.tags);
-      } catch {
-        if (cancelled) return;
-
-        setCategoryOptions([]);
-        setTagOptions([]);
-      }
-    }
-
-    loadFilterOptions();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    loadInventory();
-  }, [loadInventory]);
-
+  const response = catalogQuery.data ?? null;
   const items = response?.items ?? [];
   const total = response?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
+  const categoryOptions: InventoryCategoryOption[] =
+    categoriesQuery.data?.categories ?? [];
+
+  const tagOptions: InventoryTagOption[] = tagsQuery.data?.tags ?? [];
+
   return {
-    loading,
-    error,
+    loading:
+      catalogQuery.isLoading ||
+      categoriesQuery.isLoading ||
+      tagsQuery.isLoading,
+
+    error:
+      catalogQuery.error?.message ??
+      categoriesQuery.error?.message ??
+      tagsQuery.error?.message ??
+      null,
+
     response,
     items,
     total,
     totalPages,
     categoryOptions,
     tagOptions,
-    reload: loadInventory,
+
+    isFetching:
+      catalogQuery.isFetching ||
+      categoriesQuery.isFetching ||
+      tagsQuery.isFetching,
+
+    reload: catalogQuery.refetch,
+    reloadCategories: categoriesQuery.refetch,
+    reloadTags: tagsQuery.refetch,
   };
 }

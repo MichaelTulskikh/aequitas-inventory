@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import type {
-  InventoryCatalogItem,
-  InventoryCatalogLot,
-} from "../../../api/inventory";
 import {
   createShipmentLine,
   deleteShipmentLine,
@@ -17,14 +13,16 @@ import type {
   RequesterProfile,
   RequestingLot,
 } from "../types/inventoryPage.types";
+import type {
+  IInventoryCatalogItem,
+  IInventoryCatalogLot,
+} from "../../../utils/types/inventory/general";
 
 type UseInventoryRequestOptions = {
   onRequestSuccess?: () => Promise<void> | void;
 };
 
-export function useInventoryRequest(
-  options: UseInventoryRequestOptions = {},
-) {
+export function useInventoryRequest(options: UseInventoryRequestOptions = {}) {
   const { onRequestSuccess } = options;
 
   const [requestPrereqLoading, setRequestPrereqLoading] = useState(true);
@@ -100,8 +98,8 @@ export function useInventoryRequest(
   }, [requestPrereqLoading, profileComplete, activeDraftShipment]);
 
   function openRequestModal(
-    item: InventoryCatalogItem,
-    lot: InventoryCatalogLot,
+    item: IInventoryCatalogItem,
+    lot: IInventoryCatalogLot,
   ) {
     if (!canRequestLots) return;
 
@@ -181,7 +179,7 @@ export function useInventoryRequest(
       setTimeout(() => {
         closeRequestModal();
       }, 800);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (createdLineId) {
         try {
           await deleteShipmentLine(createdLineId);
@@ -189,8 +187,11 @@ export function useInventoryRequest(
           // best-effort rollback only
         }
       }
-
-      setRequestError(err?.message || "Failed to request inventory");
+      if (err instanceof Error) {
+        setRequestError(err.message);
+      } else {
+        setRequestError("Failed to request inventory");
+      }
     } finally {
       setRequestSaving(false);
     }

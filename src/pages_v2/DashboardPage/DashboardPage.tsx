@@ -8,7 +8,7 @@ import RecentlyFulfilled from "./general_access/RecentlyFulfilled/RecentlyFulfil
 import ShipmentStatusOverview from "./general_access/ShipmentStatusOverview/ShipmentStatusOverview";
 import AvailableInventory from "./general_access/AvailableInventory/AvailableInventory";
 import Loader from "../../components/common/Loader/Loader";
-import { useDashboardSummary } from "../../hooks/useDashboardSummary";
+import { useDashboardSummary } from "../../hooks/queries/useDashboardSummary";
 
 export default function DashboardPage() {
   const { data, isLoading, error, isFetching } = useDashboardSummary();

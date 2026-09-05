@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { InventoryCatalogItem } from "../../api/inventory";
 import { useAuth } from "../../auth/AuthContext";
 
 import AppModal from "../../components/AppModal";
@@ -18,6 +17,7 @@ import { useInventoryLotExpansion } from "./hooks/useInventoryLotExpansion";
 import { useInventoryRequest } from "./hooks/useInventoryRequest";
 
 import styles from "./InventoryPage.module.css";
+import type { IInventoryCatalogItem } from "../../utils/types/inventory/general";
 
 export default function InventoryPage() {
   const { user } = useAuth();
@@ -49,16 +49,16 @@ export default function InventoryPage() {
   });
 
   const {
-    setTagDropdownOpen,
-    setPage,
-    setPageSize,
     setSearchDraft,
     setSelectedCategoryId,
     setSelectedTagIds,
-    setPalletSearchDraft,
-    setBoxSearchDraft,
+    setPage,
+    setPageSize,
     setShowOnlyAvailable,
     setIncludeInternal,
+    setTagDropdownOpen,
+    setPalletSearchDraft,
+    setBoxSearchDraft,
   } = filters;
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function InventoryPage() {
     expansion.collapseAll();
   }
 
-  function renderTags(item: InventoryCatalogItem) {
+  function renderTags(item: IInventoryCatalogItem) {
     if (!item.tags.length) return <span className={styles.muted}>—</span>;
 
     return (

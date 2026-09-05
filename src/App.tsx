@@ -30,6 +30,7 @@ import DeclarationsPage from "./pages_v2/DeclarationsPage/DeclarationsPage";
 import DonorsPage from "./pages_v2/DonorsPage/DonorsPage";
 import InventoryPageV2 from "./pages_v2/InventoryPageV2/InventoryPageV2";
 import ShipmentAllocationPage from "./pages_v2/ShipmentAllocationPage/ShipmentAllocationPage";
+import InventoryPage from "./pages_v2/InventoryPage/InventoryPage";
 
 /* Simple login page */
 function LoginPage() {
@@ -81,8 +82,17 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        {/* delete later */}
         <Route
           path="/inventory"
+          element={
+            // <RequireCompleteProfile>
+            <InventoryPage />
+            // </RequireCompleteProfile>
+          }
+        />
+        <Route
+          path="/inventoryv2"
           element={
             // <RequireCompleteProfile>
             <InventoryPageV2 />
